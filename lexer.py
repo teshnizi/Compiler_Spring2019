@@ -1,84 +1,128 @@
 
 
 
-class lexer:
+class Lexer:
 
     line_number = 1
-    input = 0
-    lexer_output = 0
+    input_string = 0
+    output = 0
     error_output = 0
     buffer = ""
     tokens = []
-
+    iterator = 0
+    state = "start"
     symbols = [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<', '==']
 
-    def go_to_next_state(self, state, ch):
+    def __init__(self, input_name, output_name, errorfile_name):
+        self.iterator = 0
+        with open(input_name, 'r') as fin:
+            self.input_string = fin.read()
+            print(len(self.input_string))
+        # with open(output_name, 'w') as fout:
+        #     self.output = fout.read()
+        # with open(errorfile_name, 'w') as fout:
+        #     self.input_string = fout.read()
 
-        if state == "start":
+    def go_to_next_state(self):
+
+        ch = self.input_string[self.iterator]
+        self.iterator += 1
+        print("State: " + self.state + "  character: " + ch)
+
+        if self.state == "start":
             if self.type_of(ch) == "digit":
-                state = "num"
+                self.state = "num"
                 self.buffer += ch
             elif self.type_of(ch) == "letter":
-                state = "id"
+                self.state = "ID"
                 self.buffer += ch
             elif ch == "/":
-                state = "slash"
+                self.state = "slash"
                 self.buffer += ch
-            elif ch == "\\":
-                state = "bslash"
-                self.buffer += ch
-            elif self.type_of(ch) == "symbol":
-                self.tokens.append(self.line_number, "SYMBOL", ch)
-
-        if state == "bslash":
-            if ch in ['n','f','t','r','v']:
+            elif ch in ['\n','\f','\t','\r','\v',' ']:
                 self.buffer = ""
-                state = "start"
-            elif ch in ["n", "f", "v"]:
-                self.line_number += 1
+                self.state = "start"
+                if ch in ["\n", "\f", "\v"]:
+                    self.line_number += 1
+            elif self.type_of(ch) == "symbol":
+                self.tokens.append((self.line_number, "SYMBOL", ch))
+            else:
+                self.buffer = ch
+                self.state = "error"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "num":
+        # if self.state == "bslash":
+        #     if ch in ['n','f','t','r','v']:
+        #         self.buffer = ""
+        #         self.state = "start"
+        #         if ch in ["n", "f", "v"]:
+        #             self.line_number += 1
+        #     else:
+        #         self.buffer = ch
+        #         self.state = "error"
+        #     return not (len(self.input_string) == self.iterator)
+
+        if self.state == "num":
             if self.type_of(ch) == "digit":
                 self.buffer += ch
             else:
                 self.tokens.append((self.line_number, "NUM", self.buffer))
-                self.buffer = ch
-                state = "start"
+                self.buffer = ""
+                self.state = "start"
+                self.iterator -= 1
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "ID":
+        if self.state == "ID":
             tp = self.type_of(ch)
             if tp == "digit" or tp == "letter":
                 self.buffer += ch
             else:
                 self.tokens.append((self.line_number, "ID", self.buffer))
-                self.buffer = ch
-                state = "start"
+                self.buffer = ""
+                self.iterator -= 1
+                self.state = "start"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "slash":
+        if self.state == "slash":
             if ch == '*':
-                state = "fcomment"
+                self.state = "fcomment"
             elif ch == '/':
-                state = "comment"
+                self.state = "comment"
+            else:
+                self.buffer = ch
+                self.state = "error"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "fcomment":
+        if self.state == "fcomment":
             if ch == "*":
-                state = "fcomment*"
+                self.state = "fcomment*"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "fcomment*":
+
+        if self.state == "fcomment*":
             if ch == "/":
-                state = "start"
+                self.state = "start"
             else:
-                state = "fcomment*"
+                self.state = "fcomment*"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "comment":
+
+        if self.state == "comment":
             if ch == "\\":
-                state = "comment\\"
+                self.state = "comment\\"
+            return not (len(self.input_string) == self.iterator)
 
-        if state == "comment\\":
+        if self.state == "comment\\":
             if ch == 'n' or ch == 'r':
-                state = "start"
+                self.state = "start"
             else:
-                state = "comment"
+                self.state = "comment"
+            return not (len(self.input_string) == self.iterator)
+
+
+        print("INVALID STATE DETECTED:" + self.state)
+        return not (len(self.input_string) == self.iterator)
+
 
     def type_of(self, ch):
         if '0' <= ch and ch <= '9':
@@ -89,15 +133,18 @@ class lexer:
             return "letter"
         if ch in self.symbols:
             return "symbol"
+        return ch
 
-    def get_input_buffer(self, file_name):
+    def set_input_buffer(self, file_name):
         with open(file_name, 'r') as fin:
             input = fin.read()
 
     def get_next_token(self):
-        current_state = "start"
-        for i in len(input):
-            ch = input[i]
+        k = len(self.tokens)
+        while len(self.tokens) == k:
+            self.go_to_next_state()
+        print(self.tokens)
+
 
 
 
