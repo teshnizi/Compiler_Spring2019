@@ -12,15 +12,16 @@ class Lexer:
     state = "start"
     symbols = [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<', '==']
 
-    def __init__(self, input_name, output_name, errorfile_name):
+    def __init__(self, input_name):
         self.iterator = 0
         with open(input_name, 'r') as fin:
             self.input_string = fin.read()
             print(len(self.input_string))
-        # with open(output_name, 'w') as fout:
-        #     self.output = fout.read()
-        # with open(errorfile_name, 'w') as fout:
-        #     self.input_string = fout.read()
+
+    def is_in_alphabet(self, ch):
+        if self.type_of(ch) != ch or ch in ['\n','\f','\t','\r','\v',' ','/']:
+            return True
+        return False
 
     def go_to_next_state(self):
 
@@ -34,7 +35,7 @@ class Lexer:
                 self.state = "num"
                 self.buffer += ch
             elif self.type_of(ch) == "letter":
-                self.state = "ID"
+                self.state = "KEYWORD"
                 self.buffer += ch
             elif ch == "/":
                 self.state = "slash"
@@ -46,9 +47,12 @@ class Lexer:
                     self.line_number += 1
             elif self.type_of(ch) == "symbol":
                 token = (self.line_number, "SYMBOL", ch)
+                if ch == '=' and len(self.input_string) > self.iterator and self.input_string[self.iterator] == '=':
+                    token = (self.line_number, "SYMBOL", "==")
             else:
                 self.buffer = ch
                 self.state = "error"
+                self.iterator -= 1
             return (not (len(self.input_string) == self.iterator), token)
 
         # if self.state == "bslash":
@@ -66,21 +70,29 @@ class Lexer:
             if self.type_of(ch) == "digit":
                 self.buffer += ch
             else:
-                token = (self.line_number, "NUM", self.buffer)
+                if self.is_in_alphabet(ch):
+                    token = (self.line_number, "NUM", self.buffer)
+                    self.iterator -= 1
+                else:
+                    token = (self.line_number, self.buffer + ch, "Invalid Input")
                 self.buffer = ""
                 self.state = "start"
-                self.iterator -= 1
+
             return (not (len(self.input_string) == self.iterator), token)
 
-        if self.state == "ID":
+        if self.state == "KEYWORD":
             tp = self.type_of(ch)
             if tp == "digit" or tp == "letter":
                 self.buffer += ch
             else:
-                token = (self.line_number, "ID", self.buffer)
+                if self.is_in_alphabet(ch):
+                    token = (self.line_number, "KEYWORD", self.buffer)
+                    self.iterator -= 1
+                else:
+                    token = (self.line_number, self.buffer + ch, "Invalid Input")
                 self.buffer = ""
-                self.iterator -= 1
                 self.state = "start"
+
             return (not (len(self.input_string) == self.iterator), token)
 
         if self.state == "slash":
@@ -110,6 +122,13 @@ class Lexer:
         if self.state == "comment":
             if ch in ["\n", "\f", "\v"]:
                 self.state = "start"
+                self.line_number += 1
+            return (not (len(self.input_string) == self.iterator), token)
+
+        if self.state == "error":
+            token = (self.line_number, self.buffer, "invalid input")
+            self.buffer = ""
+            self.state = "start"
             return (not (len(self.input_string) == self.iterator), token)
 
         # if self.state == "comment\\":
