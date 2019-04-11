@@ -13,26 +13,73 @@ class lexer:
     symbols = [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<', '==']
 
     def go_to_next_state(self, state, ch):
+
         if state == "start":
             if self.type_of(ch) == "digit":
                 state = "num"
                 self.buffer += ch
-            if self.type_of(ch) == "letter":
+            elif self.type_of(ch) == "letter":
                 state = "id"
                 self.buffer += ch
-            if ch == "/":
+            elif ch == "/":
                 state = "slash"
                 self.buffer += ch
-            if ch == "\\":
+            elif ch == "\\":
                 state = "bslash"
                 self.buffer += ch
+            elif self.type_of(ch) == "symbol":
+                self.tokens.append(self.line_number, "SYMBOL", ch)
+
         if state == "bslash":
             if ch in ['n','f','t','r','v']:
                 self.buffer = ""
                 state = "start"
-            if ch in ["n", "f", "v"]:
+            elif ch in ["n", "f", "v"]:
                 self.line_number += 1
-        
+
+        if state == "num":
+            if self.type_of(ch) == "digit":
+                self.buffer += ch
+            else:
+                self.tokens.append((self.line_number, "NUM", self.buffer))
+                self.buffer = ch
+                state = "start"
+
+        if state == "ID":
+            tp = self.type_of(ch)
+            if tp == "digit" or tp == "letter":
+                self.buffer += ch
+            else:
+                self.tokens.append((self.line_number, "ID", self.buffer))
+                self.buffer = ch
+                state = "start"
+
+        if state == "slash":
+            if ch == '*':
+                state = "fcomment"
+            elif ch == '/':
+                state = "comment"
+
+        if state == "fcomment":
+            if ch == "*":
+                state = "fcomment*"
+
+        if state == "fcomment*":
+            if ch == "/":
+                state = "start"
+            else:
+                state = "fcomment*"
+
+        if state == "comment":
+            if ch == "\\":
+                state = "comment\\"
+
+        if state == "comment\\":
+            if ch == 'n' or ch == 'r':
+                state = "start"
+            else:
+                state = "comment"
+
     def type_of(self, ch):
         if '0' <= ch and ch <= '9':
             return "digit"
