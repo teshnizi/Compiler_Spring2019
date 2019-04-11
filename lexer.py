@@ -16,7 +16,7 @@ class Lexer:
         self.iterator = 0
         with open(input_name, 'r') as fin:
             self.input_string = fin.read()
-            print(len(self.input_string))
+            # print(len(self.input_string))
 
     def is_in_alphabet(self, ch):
         if self.type_of(ch) != ch or ch in ['\n','\f','\t','\r','\v',' ','/']:
@@ -54,17 +54,6 @@ class Lexer:
                 self.state = "error"
                 self.iterator -= 1
             return (not (len(self.input_string) == self.iterator), token)
-
-        # if self.state == "bslash":
-        #     if ch in ['n','f','t','r','v']:
-        #         self.buffer = ""
-        #         self.state = "start"
-        #         if ch in ["n", "f", "v"]:
-        #             self.line_number += 1
-        #     else:
-        #         self.buffer = ch
-        #         self.state = "error"
-        #     return (not (len(self.input_string) == self.iterator), token)
 
         if self.state == "num":
             if self.type_of(ch) == "digit":
@@ -130,14 +119,6 @@ class Lexer:
             self.buffer = ""
             self.state = "start"
             return (not (len(self.input_string) == self.iterator), token)
-
-        # if self.state == "comment\\":
-        #     if ch == 'n' or ch == 'r':
-        #         self.state = "start"
-        #     else:
-        #         self.state = "comment"
-        #     return (not (len(self.input_string) == self.iterator), token)
-
 
         print("INVALID STATE DETECTED:" + self.state)
         return (not (len(self.input_string) == self.iterator), token)
