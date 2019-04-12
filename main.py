@@ -3,7 +3,7 @@ import lexer
 
 lexer = lexer.Lexer("input_code2.c")
 
-with open('scanner.txt', 'w') as fout, open('t.errors_lexical', 'w') as ferr:
+with open('scanner.txt', 'w') as fout, open('errors_lexical.txt', 'w') as ferr:
     last_line_out = 0
     last_line_err = 0
     while True:
