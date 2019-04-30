@@ -1,6 +1,5 @@
 import lexer
 
-
 lexer = lexer.Lexer("input_code2.c")
 
 with open('scanner.txt', 'w') as fout, open('errors_lexical.txt', 'w') as ferr:
