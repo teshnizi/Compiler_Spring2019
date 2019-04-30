@@ -1,7 +1,7 @@
 import lexer
 
 
-lexer = lexer.Lexer("input_code2.c")
+lexer = lexer.Lexer("input_code1.c")
 
 with open('scanner.txt', 'w') as fout, open('errors_lexical.txt', 'w') as ferr:
     last_line_out = 0

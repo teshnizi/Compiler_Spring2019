@@ -144,6 +144,38 @@ class Lexer:
                 break
         return tp
 
-
-
-
+program -> declaration-list EOF
+declaration-list -> declaration-list declaration
+declaration-list -> ε
+declaration -> var-declaration
+declaration -> fun-declaration
+var-declaration -> type-specifier ID ;
+var-declaration ->  type-specifier ID [ NUM ] ;
+type-specifier -> int | void
+fun-declaration -> type-specifier ID ( params ) compound-stmt
+params -> param-list | void
+param-list -> param-list , param | param
+param -> type-specifier ID | type-specifier ID [ ]
+compound-stmt -> { declaration-list statement-list }
+statement-list -> statement-list statement | ε
+statement -> expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt | switch-stmt
+expression-stmt -> expression ; | continue ; | break ; | ;
+selection-stmt -> if ( expression ) statement else statement
+iteration-stmt -> while ( expression ) statement
+return-stmt -> return ; | return expression ;
+switch-stmt -> switch ( expression ) { case-stmts default-stmt }
+case-stmts -> case-stmts case-stmt | ε
+case-stmt -> case NUM : statement-list
+default-stmt -> default : statement-list | ε
+expression -> var = expression | simple-expression
+var -> ID | ID [ expression ]
+simple-expression -> additive-expression relop additive-expression | additive-expression
+relop -> < | ==
+additive-expression -> additive-expression addop term | term
+addop -> + | -
+term -> term * signed-factor | signed-factor
+signed-factor -> factor | + factor | - factor
+factor -> ( expression ) | var | call | NUM
+call -> ID ( args )
+args -> arg-list | ε
+arg-list -> arg-list , expression | expression
