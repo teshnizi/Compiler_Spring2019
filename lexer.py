@@ -1,5 +1,6 @@
 
 class Lexer:
+
     line_number = 1
     input_string = 0
     output = 0
@@ -143,4 +144,3 @@ class Lexer:
             if tp[1] != (0, 0, 0):
                 break
         return tp
-    
