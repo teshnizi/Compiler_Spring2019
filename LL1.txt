@@ -38,10 +38,10 @@ return-stmt -> return T3
 T3 -> ;
 T3 -> expression ;
 switch-stmt -> switch ( expression ) { case-stmts default-stmt }
-case-stmts -> case NUM : statement-list S4
 case-stmts -> S4
-S4 -> case-stmt S4
 S4 -> ε
+S4 -> case-stmt S4
+case-stmt -> case NUM : statement-list
 default-stmt -> default : statement-list
 default-stmt -> ε
 expression -> var = expression
