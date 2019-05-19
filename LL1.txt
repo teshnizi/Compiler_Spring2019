@@ -2,9 +2,6 @@ program -> declaration-list EOF
 
 //////////////////////////////////////////////////////
 
-declaration-list -> declaration-list declaration
-declaration-list -> ε
----
 declaration-list -> S1
 S1 -> declaration S1
 S1 -> ε
@@ -18,6 +15,10 @@ declaration -> fun-declaration
 
 var-declaration -> type-specifier ID ;
 var-declaration ->  type-specifier ID [ NUM ] ;
+---
+var-declaration -> type-specifier ID T1
+T1 -> ;
+T1 -> [ NUM ] ;
 
 //////////////////////////////////////////////////////
 
@@ -35,9 +36,6 @@ params -> void
 
 //////////////////////////////////////////////////////
 
-param-list -> param-list , param
-param-list -> param
----
 param-list -> param S2
 S2 -> , param S2
 S2 -> ε
@@ -46,6 +44,10 @@ S2 -> ε
 
 param -> type-specifier ID
 param -> type-specifier ID [ ]
+---
+param -> type-specifier ID T2
+T2 -> [ ]
+T2 -> ε
 
 //////////////////////////////////////////////////////
 
@@ -53,9 +55,6 @@ compound-stmt -> { declaration-list statement-list }
 
 //////////////////////////////////////////////////////
 
-statement-list -> statement-list statement
-statement-list -> ε
----
 statement-list -> S3
 S3 -> statement S3
 S3 -> ε
@@ -88,6 +87,10 @@ iteration-stmt -> while ( expression ) statement
 
 return-stmt -> return ;
 return-stmt -> return expression ;
+---
+return-stmt -> return T3
+T3 -> ;
+T3 -> expression ;
 
 //////////////////////////////////////////////////////
 
@@ -95,10 +98,6 @@ switch-stmt -> switch ( expression ) { case-stmts default-stmt }
 
 //////////////////////////////////////////////////////
 
-case-stmts -> case-stmts case-stmt
-case-stmts -> ε
-case-stmt -> case NUM : statement-list
----
 case-stmts -> case NUM : statement-list S4
 case-stmts -> S4
 S4 -> case-stmt S4
@@ -118,11 +117,19 @@ expression -> simple-expression
 
 var -> ID
 var -> ID [ expression ]
+---
+var -> ID T4
+T4 -> [ expression ]
+T4 -> ε
 
 //////////////////////////////////////////////////////
 
 simple-expression -> additive-expression relop additive-expression
 simple-expression -> additive-expression
+---
+simple-expression -> additive-expression T5
+T5 -> relop additive-expression
+T5 -> ε
 
 //////////////////////////////////////////////////////
 
@@ -131,9 +138,6 @@ relop -> ==
 
 //////////////////////////////////////////////////////
 
-additive-expression -> additive-expression addop term
-additive-expression -> term
----
 additive-expression -> term S5
 S5 -> ε
 S5 -> addop term S5
@@ -145,9 +149,6 @@ addop -> -
 
 //////////////////////////////////////////////////////
 
-term -> term * signed-factor
-term -> signed-factor
----
 term -> signed-factor S6
 S6 -> ε
 S6 -> * signed-factor S6
@@ -176,9 +177,6 @@ args -> ε
 
 //////////////////////////////////////////////////////
 
-arg-list -> arg-list , expression
-arg-list -> expression
----
 arg-list -> expression S7
 S7 -> ε
 S7 -> , expression S7
