@@ -98,10 +98,16 @@ switch-stmt -> switch ( expression ) { case-stmts default-stmt }
 
 //////////////////////////////////////////////////////
 
-case-stmts -> case NUM : statement-list S4
+case-stmts -> case-stmts case-stmt
+case-stmts -> ε
+---
 case-stmts -> S4
-S4 -> case-stmt S4
 S4 -> ε
+S4 -> case-stmt S4
+
+//////////////////////////////////////////////////////
+
+case-stmt -> case NUM : statement-list
 
 //////////////////////////////////////////////////////
 
