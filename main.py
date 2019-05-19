@@ -1,5 +1,6 @@
 import lexer
 import parser
+from utils import read_rules
 
 
 def func_phase1(lexer):
@@ -36,6 +37,9 @@ if __name__ == '__main__':
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
                  '*', ':', '']
+
+    rules = read_rules('LL1.txt')
+
     non_terminals = ['program', 'declaration-list', 'S1', 'declaration', 'var-declaration', 'T1', 'type-specifier',
                      'fun-declaration', 'params', 'param-list', 'S2', 'param', 'T2',  'compound-stmt',
                      'statement-list', 'S3', 'statement', 'expression-stmt', 'selection-stmt', 'iteration-stmt',
@@ -43,5 +47,5 @@ if __name__ == '__main__':
                      'var', 'T4', 'simple-expression', 'T5', 'relop',  'additive-expression', 'S5', 'addop',
                      'term', 'S6', 'signed-factor', 'factor', 'call', 'args', 'arg-list', 'S7']
 
-    parser = parser.Parser(lexer=lexer, rules=None, first_sets=None, follow_sets=None,
-                           non_terminals=None, terminals=None)
+    parser = parser.Parser(lexer=lexer, rules=rules, first_sets=None, follow_sets=None,
+                           non_terminals=non_terminals, terminals=terminals)
