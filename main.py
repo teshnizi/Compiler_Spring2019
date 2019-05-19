@@ -36,6 +36,12 @@ if __name__ == '__main__':
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
                  '*', ':', '']
+    non_terminals = ['program', 'declaration-list', 'S1', 'declaration', 'var-declaration', 'T1', 'type-specifier',
+                     'fun-declaration', 'params', 'param-list', 'S2', 'param', 'T2',  'compound-stmt',
+                     'statement-list', 'S3', 'statement', 'expression-stmt', 'selection-stmt', 'iteration-stmt',
+                     'return-stmt', 'T3', 'switch-stmt', 'case-stmts', 'S4', 'case-stmt', 'default-stmt', 'expression',
+                     'var', 'T4', 'simple-expression', 'T5', 'relop',  'additive-expression', 'S5', 'addop',
+                     'term', 'S6', 'signed-factor', 'factor', 'call', 'args', 'arg-list', 'S7']
 
     parser = parser.Parser(lexer=lexer, rules=None, first_sets=None, follow_sets=None,
                            non_terminals=None, terminals=None)
