@@ -33,7 +33,9 @@ def func_phase1(lexer):
 if __name__ == '__main__':
     lexer = lexer.Lexer("input_code2.c")
 
-    terminals = []
+    terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
+                 'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
+                 '*', ':', '']
 
     parser = parser.Parser(lexer=lexer, rules=None, first_sets=None, follow_sets=None,
                            non_terminals=None, terminals=None)
