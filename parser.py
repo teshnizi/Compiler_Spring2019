@@ -19,7 +19,7 @@ class Parser:
 
         for nt in self.non_terminals:
             # print("Non terminal: ", nt)
-            for t in first_sets[nt]:
+            for t in self.terminals:
                 # print("     Terminal: ", t)
                 for rule in rules[nt]:
                     # print("         rule:" , rule)
@@ -39,6 +39,10 @@ class Parser:
                     if rule[0] in self.non_terminals and t in follow_sets[rule[0]] and 'ε' in first_sets[rule[0]]:
                         # if (nt,t) in table:
                         #     print("             !!!!!!!!!!!!!Conflict3", (nt, t), table[(nt,t)])
+                        table[(nt,t)] = rule
+                        # print("                 TABLE UPDATED: ", (nt, t), rule)
+
+                    if rule[0] == 'ε' and t in follow_sets[nt]:
                         table[(nt,t)] = rule
                         # print("                 TABLE UPDATED: ", (nt, t), rule)
 

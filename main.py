@@ -43,4 +43,6 @@ if __name__ == '__main__':
     non_terminals = get_non_terminals('LL1.txt')
      
     parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
-                           non_terminals=non_terminals, terminals=terminals)
+                        non_terminals=non_terminals, terminals=terminals)
+
+    # print(parser.table)
