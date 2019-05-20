@@ -13,3 +13,4 @@ def read_rules(path):
                 rules[last_nt].append(rule.split())
 
     return rules
+

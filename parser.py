@@ -1,8 +1,8 @@
 import os
 from lexer import Lexer
 
-class Parser:
 
+class Parser:
     def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals):
         self.lexer = lexer
         self.non_terminals = non_terminals
@@ -28,12 +28,9 @@ class Parser:
                 for rule in rules[nt]:
                     if rule[0] == 'ε':
                         table[(nt,t)] = rule
-
         return table
 
-
     def get_and_split_token(self):
-
         self.input = self.lexer.get_next_token()
         if self.input[0] == False:
             self.input = None
@@ -46,9 +43,7 @@ class Parser:
         else:
             self.input = self.input[1][2]
 
-
     def parse(self, NT, depth):
-
         self.tree_file.write(['|'] * depth, NT)
 
         if self.input == None:
@@ -62,4 +57,4 @@ class Parser:
                 else:
                     print(self.line_number, "Syntax Error! Missing", self.input)
             else:
-                self.parse(element)
+                self.parse(element, depth+1)
