@@ -45,4 +45,5 @@ if __name__ == '__main__':
     parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
                         non_terminals=non_terminals, terminals=terminals)
 
+    parser.parse('program', 1)
     # print(parser.table)

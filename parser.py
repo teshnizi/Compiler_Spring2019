@@ -64,7 +64,10 @@ class Parser:
             self.input = self.input[1][2]
 
     def parse(self, nt, depth):
-        self.tree_file.write(' |    ' * depth + nt)
+        if nt == 'ε':
+            return
+
+        self.tree_file.write(' |    ' * depth + nt + '\n')
 
         if self.input is None:
             self.get_and_split_token()
@@ -73,9 +76,8 @@ class Parser:
             print(self.line_number, "Syntax Error! Unexpected ", self.input)
             self.get_and_split_token()
 
-        if 'ε' not in self.first_sets[(nt, self.input)]:
-            print(self.line_number, "Syntax Error! Missing", "")  # TODO: change the empty msg with appropriate value
-        else:
+        if (self.input in self.first_sets[nt]) or \
+                ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
             for next_state in self.table[(nt, self.input)]:
                 if next_state in self.terminals:
                     if next_state == self.input:
@@ -84,3 +86,5 @@ class Parser:
                         print(self.line_number, "Syntax Error! Missing ", next_state)
                 else:
                     self.parse(next_state, depth+1)
+        else:
+            print(self.line_number, "Syntax Error! Missing", "")  # TODO: change the empty msg with appropriate value
