@@ -22,11 +22,16 @@ class Parser:
             for t in first_set:
                 for rule in rules[nt]:
                     if rule[0] == t:
-                        table[(nt,t)] = rule
+                        if (nt,t) in table:
+                            print("Conflict", table[(nt,t)])
+                        table[(nt,t)] = rules
+
 
             for t in follow_set:
                 for rule in rules[nt]:
                     if rule[0] == 'ε':
+                        if (nt,t) in table:
+                            print("Conflict", table[(nt,t)])
                         table[(nt,t)] = rule
         return table
 
