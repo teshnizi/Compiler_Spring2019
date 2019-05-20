@@ -13,6 +13,7 @@ class Parser:
         self.line_number = None
         self.first_sets = first_sets
         self.follow_sets = follow_sets
+        self.rules = rules
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
@@ -97,4 +98,4 @@ class Parser:
                 else:
                     self.parse(next_state, depth+1)
         else:
-            print(self.line_number, "Syntax Error! Missing", "")  # TODO: change the empty msg with appropriate value
+            print(self.line_number, "Syntax Error! Missing ", nt, " couldn't find the appropriate rule: ", self.rules[nt])  # TODO: change the empty msg with appropriate value
