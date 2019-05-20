@@ -32,7 +32,7 @@ def func_phase1(lexer):
 
 
 if __name__ == '__main__':
-    lexer = lexer.Lexer("input_code2.c")
+    lexer = lexer.Lexer("input_code1.c")
 
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
@@ -41,14 +41,15 @@ if __name__ == '__main__':
     rules = read_rules('LL1.txt')
     first_sets, follow_sets = read_first_follow('first_sets_scratch.txt', 'follow_sets_scratch.txt')
 
-    non_terminals = ['program', 'declaration-list', 'S1', 'declaration', 'var-declaration', 'T1', 'type-specifier',
-                     'fun-declaration', 'params', 'param-list', 'S2', 'param', 'T2',  'compound-stmt',
-                     'statement-list', 'S3', 'statement', 'expression-stmt', 'selection-stmt', 'iteration-stmt',
-                     'return-stmt', 'T3', 'switch-stmt', 'case-stmts', 'S4', 'case-stmt', 'default-stmt', 'expression',
-                     'var', 'T4', 'simple-expression', 'T5', 'relop',  'additive-expression', 'S5', 'addop',
-                     'term', 'S6', 'signed-factor', 'factor', 'call', 'args', 'arg-list', 'S7']
+    non_terminals = ['program', 'declaration-list', 'declaration-list_1', 'Fint', 'Fvoid', 'declaration', 'FID_1',
+                     'FID_2', 'FID_3', 'FID_4', 'FID_5', 'FID_6', 'type-specifier', 'Fvoid_1',
+                     'param-list_1', 'params', 'param', 'compound-stmt', 'statement-list_1', 'Ftype-specifier_1',
+                     'statement-list', 'statement', 'expression-stmt', 'selection-stmt', 'case-stmt_1',
+                     'iteration-stmt', 'return-stmt', 'switch-stmt', 'case-stmt', 'default-stmt',
+                     'expression', 'simple-expression', 'relop', 'additive-expression',
+                     'addop', 'FID', 'term', 'factor', 'args', 'arg-list', 'Freturn', 'Fadditive-expression',
+                     'additive-expression_1', 'term_1', 'single-factor','arg-list_1']
+    print(len(non_terminals))
      
-    parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
-                          non_terminals=non_terminals, terminals=terminals)
-
-    print(parser.table)
+    #parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
+    #                       non_terminals=non_terminals, terminals=terminals)

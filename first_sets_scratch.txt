@@ -1,44 +1,47 @@
-program EOF, int, void,
-declaration-list ε, int, void,
-S1 ε, int, void,
-declaration int, void,
-var-declaration int, void,
-T1 ;, [,
-type-specifier int, void,
-fun-declaration int, void,
-params void, int,
-param-list int, void,
-S2 ,, ε,
-param int, void,
-T2 [, ε,
-compound-stmt {,
-statement-list ε, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM,
-S3 ε, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM,
-statement {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM,
-expression-stmt continue, break, ;, ID, +, -, (, NUM,
-selection-stmt if,
-iteration-stmt while,
-return-stmt return,
-T3 ;, ID, +, -, (, NUM,
-switch-stmt switch,
-case-stmts ε, case,
-S4 ε, case,
-case-stmt case,
-default-stmt default, ε,
-expression ID, +, -, (, NUM,
-var ID,
-T4 [, ε,
-simple-expression +, -, (, ID, NUM,
-T5 ε, <, ==,
-relop <, ==,
-additive-expression +, -, (, ID, NUM,
-S5 ε, +, -,
-addop +, -,
-term +, -, (, ID, NUM,
-S6 ε, *,
-signed-factor +, -, (, ID, NUM,
-factor (, ID, NUM,
-call ID,
-args ε, ID, +, -, (, NUM,
-arg-list ID, +, -, (, NUM,
-S7 ε, ,,
+program	EOF, int, void
+declaration-list	ε, int, void
+declaration-list_1	ε, int, void
+declaration	int, void
+Fint	ID
+FID_5	(, ;, [
+Fvoid	ID
+FID_6	(, ;, [
+FID_1	;, [
+type-specifier	int, void
+params	int, void
+Fvoid_1	ε, ID
+param-list_1	comma, ε
+param	int, void
+Ftype-specifier_1	ID
+FID_2	ε, [
+compound-stmt	{
+statement-list	ε, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -
+statement-list_1	ε, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -
+statement	{, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -
+expression-stmt	continue, break, ;, ID, (, NUM, +, -
+selection-stmt	if
+iteration-stmt	while
+return-stmt	return
+Freturn	;, ID, (, NUM, +, -
+switch-stmt	switch
+case-stmt	case, ε
+case-stmt_1	ε, case
+default-stmt	default, ε
+expression	ID, (, NUM, +, -
+FID_3	(, [, =, *, <, ε, +, -
+FFID	=, *, <, ε, +, -
+F=	ID, (, NUM, +, -, =
+FID	ε, [
+Fadditive-expression	ε, <, ==
+RELOP	<, ==
+additive-expression	+, -, (, ID, NUM
+additive-expression_1	ε, +, -
+addop	+, -
+term	+, -, (, ID, NUM
+term_1	*, ε
+single-factor	+, -, (, ID, NUM
+factor	(, ID, NUM
+FID_4	[, ε, (
+args	ε, ID, (, NUM, +, -
+arg-list	ID, (, NUM, +, -
+arg-list_1	comma, ε
