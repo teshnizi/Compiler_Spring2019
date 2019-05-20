@@ -55,6 +55,9 @@ class Parser:
         if self.input[0] == False:
             self.input = "EOF"
             return
+        if self.input[1][2] == 'invalid input':
+            self.get_and_split_token()
+            return
 
         self.line_number = self.input[1][0]
 
