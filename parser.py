@@ -3,13 +3,14 @@ from lexer import Lexer
 
 
 class Parser:
-    def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals):
+    def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals, tree_file, syntax_errors_file):
         self.lexer = lexer
         self.non_terminals = non_terminals
         self.terminals = terminals
         self.table = self.make_table(rules, first_sets, follow_sets)
         self.input = None
-        self.tree_file = open("tree.txt", "w")
+        self.tree_file = tree_file
+        self.error_file = syntax_errors_file
         self.line_number = None
         self.first_sets = first_sets
         self.follow_sets = follow_sets
@@ -85,10 +86,10 @@ class Parser:
             if 'ε' in self.first_sets[nt]:
                 return
             else:
-                print(self.line_number, "Syntax Error! Unexpected EndOfFile")
+                self.error_file.write(self.line_number + " Syntax Error! Unexpected EndOfFile")
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
-            print(self.line_number, "Syntax Error! Unexpected ", self.input)
+            self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected " + str(self.input))
             self.get_and_split_token()
 
         if (self.input in self.first_sets[nt]) or \
@@ -98,15 +99,15 @@ class Parser:
                 if next_state in self.terminals:
                     if nt == 'program':
                         if next_state != 'EOF':
-                            print(self.line_number, "Syntax Error! Malformed Input")
+                            self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input")
 
                     if self.input is None:
                         self.get_and_split_token()
                     if next_state == self.input:
                         self.input = None
                     else:
-                        print(self.line_number, "Syntax Error! Missing ", next_state)
+                        self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state)
                 else:
                     self.parse(next_state, depth+1)
         else:
-            print(self.line_number, "Syntax Error! Missing ", nt, " couldn't find the appropriate rule: ", self.rules[nt])  # TODO: change the empty msg with appropriate value
+            self.error_file.write(str(self.line_number) + " Syntax Error! Missing ", nt + " couldn't find the appropriate rule: " + str(self.rules[nt]))

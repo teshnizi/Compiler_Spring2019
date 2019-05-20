@@ -32,9 +32,8 @@ def func_phase1(lexer):
 
 
 if __name__ == '__main__':
-    lexer = lexer.Lexer("input_code1.c")
 
-    # func_phase1(lexer)
+    lexer = lexer.Lexer("input_code1.c")
 
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
@@ -43,9 +42,11 @@ if __name__ == '__main__':
     rules = read_rules('LL1.txt')
     first_sets, follow_sets = read_first_follow('first_sets_scratch.txt', 'follow_sets_scratch.txt')
     non_terminals = get_non_terminals('LL1.txt')
-     
-    parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
-                        non_terminals=non_terminals, terminals=terminals)
 
-    parser.parse('program', 1)
+    with open("tree.txt", "w") as tree_file, open("syntax_errors.txt", "w") as syntax_errors_file:
+        parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
+                        non_terminals=non_terminals, terminals=terminals, tree_file=tree_file, syntax_errors_file=syntax_errors_file)
+
+        parser.parse('program', 0)
+
     # print(parser.table)
