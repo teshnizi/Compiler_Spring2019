@@ -5,7 +5,7 @@ def read_rules(path):
         last_nt = None
         rules = dict()
         for line in f:
-            new_nt, rule = line.split('->')
+            new_nt, rule = line.split(' ->')
             if new_nt != last_nt:
                 last_nt = new_nt
                 rules[new_nt] = [rule.split()]
