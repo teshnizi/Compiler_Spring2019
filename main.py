@@ -46,6 +46,6 @@ if __name__ == '__main__':
                      'return-stmt', 'T3', 'switch-stmt', 'case-stmts', 'S4', 'case-stmt', 'default-stmt', 'expression',
                      'var', 'T4', 'simple-expression', 'T5', 'relop',  'additive-expression', 'S5', 'addop',
                      'term', 'S6', 'signed-factor', 'factor', 'call', 'args', 'arg-list', 'S7']
-
+     
     parser = parser.Parser(lexer=lexer, rules=rules, first_sets=None, follow_sets=None,
                            non_terminals=non_terminals, terminals=terminals)
