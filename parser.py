@@ -18,29 +18,29 @@ class Parser:
         table = dict()
 
         for nt in self.non_terminals:
-            print("Non terminal: ", nt)
+            # print("Non terminal: ", nt)
             for t in first_sets[nt]:
-                print("     Terminal: ", t)
+                # print("     Terminal: ", t)
                 for rule in rules[nt]:
-                    print("         rule:" , rule)
+                    # print("         rule:" , rule)
 
                     if rule[0] == t:
-                        if (nt,t) in table:
-                            print("             !!!!!!!!!!!!!Conflict1", (nt, t), table[(nt,t)])
+                        # if (nt,t) in table:
+                            # print("             !!!!!!!!!!!!!Conflict1", (nt, t), table[(nt,t)])
                         table[(nt,t)] = rule
-                        print("                 TABLE UPDATED: ", (nt, t), rule)
+                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
                     if rule[0] in self.non_terminals and t in first_sets[rule[0]]:
-                        if (nt,t) in table:
-                            print("             !!!!!!!!!!!!!Conflict2", (nt, t), table[(nt,t)])
+                        # if (nt,t) in table:
+                        #     print("             !!!!!!!!!!!!!Conflict2", (nt, t), table[(nt,t)])
                         table[(nt, t)] = rule
-                        print("                 TABLE UPDATED: ", (nt, t), rule)
+                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
                     if rule[0] in self.non_terminals and t in follow_sets[rule[0]] and 'ε' in first_sets[rule[0]]:
-                        if (nt,t) in table:
-                            print("             !!!!!!!!!!!!!Conflict3", (nt, t), table[(nt,t)])
+                        # if (nt,t) in table:
+                        #     print("             !!!!!!!!!!!!!Conflict3", (nt, t), table[(nt,t)])
                         table[(nt,t)] = rule
-                        print("                 TABLE UPDATED: ", (nt, t), rule)
+                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
         return table
         # if (nt,t) in table:
