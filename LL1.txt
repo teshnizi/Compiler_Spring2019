@@ -18,7 +18,7 @@ params -> int Ftype-specifier_1 param-list_1
 params -> void Fvoid_1
 Fvoid_1 -> Ftype-specifier_1 param-list_1
 Fvoid_1 -> ε
-param-list_1 -> comma param param-list_1
+param-list_1 -> , param param-list_1
 param-list_1 -> ε
 param -> type-specifier Ftype-specifier_1
 Ftype-specifier_1 -> ID FID_2
@@ -61,6 +61,7 @@ FFID -> = F=
 FFID -> * single-factor term_1 additive-expression_1 Fadditive-expression
 FFID -> addop term additive-expression_1 Fadditive-expression
 FFID -> < additive-expression
+FFID -> == additive-expression
 FFID -> ε
 F= -> expression
 F= -> = additive-expression
@@ -89,5 +90,5 @@ FID_4 -> ( args )
 args -> arg-list
 args -> ε
 arg-list -> expression arg-list_1
-arg-list_1 -> comma expression arg-list_1
+arg-list_1 -> , expression arg-list_1
 arg-list_1 -> ε

@@ -1,5 +1,6 @@
 void main(void){
-    int a = 0;
+    int a;
+    a = 0;
     // comment 2
     a = 2 + +2;
     a = a + -3;

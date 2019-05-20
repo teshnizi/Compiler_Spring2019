@@ -11,9 +11,9 @@ type-specifier ID
 params )
 Fvoid_1 )
 param-list_1 )
-param comma, )
-Ftype-specifier_1 comma, )
-FID_2 comma, )
+param ,, )
+Ftype-specifier_1 ,, )
+FID_2 ,, )
 compound-stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
 statement-list }, case, default
 statement-list_1 }, case, default
@@ -28,21 +28,21 @@ case-stmts default, }
 case-stmts_1 default, }
 case-stmt case, default, }
 default-stmt }
-expression ;, ), ], comma
-FID_3 ;, ), ], comma
-FFID ;, ), ], comma
-F= ;, ), ], comma
-FID =, *, <, +, -, ;, ), ==, ], comma
-Fadditive-expression ;, ), ], comma
+expression ;, ), ], ,
+FID_3 ;, ), ], ,
+FFID ;, ), ], ,
+F= ;, ), ], ,
+FID =, *, <, ==, +, -, ;, ), ], ,
+Fadditive-expression ;, ), ], ,
 RELOP +, -, (, ID, NUM
-additive-expression ;, ), ], comma
-additive-expression_1 <, ==, ;, ), ], comma
+additive-expression ;, ), ], ,
+additive-expression_1 <, ==, ;, ), ], ,
 addop +, -, (, ID, NUM
-term +, -, <, ==, ;, ), ], comma
-term_1 +, -, <, ==, ;, ), ], comma
-single-factor *, +, -, <, ==, ;, ), ], comma
-factor *, +, -, <, ==, ;, ), ], comma
-FID_4 *, +, -, <, ==, ;, ), ], comma
+term +, -, <, ==, ;, ), ], ,
+term_1 +, -, <, ==, ;, ), ], ,
+single-factor *, +, -, <, ==, ;, ), ], ,
+factor *, +, -, <, ==, ;, ), ], ,
+FID_4 *, +, -, <, ==, ;, ), ], ,
 args )
 arg-list )
 arg-list_1 )

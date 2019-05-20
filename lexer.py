@@ -52,6 +52,7 @@ class Lexer:
             elif self.type_of(ch) == "symbol":
                 token = (self.line_number, "SYMBOL", ch)
                 if ch == '=' and len(self.input_string) > self.iterator and self.input_string[self.iterator] == '=':
+                    self.iterator += 1
                     token = (self.line_number, "SYMBOL", "==")
             else:
                 self.buffer = ch

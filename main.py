@@ -34,6 +34,8 @@ def func_phase1(lexer):
 if __name__ == '__main__':
     lexer = lexer.Lexer("input_code1.c")
 
+    # func_phase1(lexer)
+
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
                  '*', ':', '']
@@ -46,4 +48,4 @@ if __name__ == '__main__':
                         non_terminals=non_terminals, terminals=terminals)
 
     parser.parse('program', 1)
-    # print(parser.table)
+    print(parser.table)

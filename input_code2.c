@@ -6,7 +6,7 @@ void main(void){
     b = a + 2;
     d = a * b;
     cde = a;
-    
+
     if (b == 3) {
         a = 3;
         cd!e = -7;
