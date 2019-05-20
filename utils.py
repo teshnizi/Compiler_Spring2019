@@ -35,3 +35,7 @@ def read_first_follow(path_first, path_follow):
             follow_sets[non_terminal] = follow_set
 
     return first_sets, follow_sets
+
+
+def func():
+    pass

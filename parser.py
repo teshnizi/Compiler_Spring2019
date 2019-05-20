@@ -11,6 +11,8 @@ class Parser:
         self.input = None
         self.tree_file = open("tree.txt", "w")
         self.line_number = None
+        self.first_sets = first_sets
+        self.follow_sets = follow_sets
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
@@ -49,17 +51,25 @@ class Parser:
             self.input = self.input[1][2]
 
     def parse(self, NT, depth):
-        self.tree_file.write(['|'] * depth, NT)
+        self.tree_file.write( '|' * depth +  NT)
 
-        if self.input == None:
+        if self.input is None:
             self.get_and_split_token()
 
-        next_state = self.table[NT]
-        for element in next_state:
-            if element in self.terminals:
-                if element == self.input:
+        while self.input not in self.follow_sets[NT] + self.first_sets[NT]:
+            print(self.line_number, "Syntax Error! Unexpected ", self.input)
+            self.get_and_split_token()
+
+        if 'ε' in self.first_sets[NT]:
+            print(self.line_number, "Syntax Error! Missing", None)  # TODO: change None with appropriate value
+
+        next_states = self.table[(NT, self.input)]
+
+        for next_state in next_states:
+            if next_state in self.terminals:
+                if next_state == self.input:
                     self.get_and_split_token()
                 else:
-                    print(self.line_number, "Syntax Error! Missing", self.input)
+                    print(self.line_number, "Syntax Error! Missing ", next_state)
             else:
-                self.parse(element, depth+1)
+                self.parse(next_state, depth+1)

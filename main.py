@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     rules = read_rules('LL1.txt')
     first_sets, follow_sets = read_first_follow('first_sets_scratch.txt', 'follow_sets_scratch.txt')
-    print(follow_sets)
+    print(rules)
 
     non_terminals = ['program', 'declaration-list', 'S1', 'declaration', 'var-declaration', 'T1', 'type-specifier',
                      'fun-declaration', 'params', 'param-list', 'S2', 'param', 'T2',  'compound-stmt',
