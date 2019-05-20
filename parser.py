@@ -74,18 +74,18 @@ class Parser:
 
         self.tree_file.write(' |    ' * depth + nt + '\n')
 
-        print(nt, "   " , self.input)
+        # print(nt, "   " , self.input)
 
         if self.input is None:
             self.get_and_split_token()
 
-        print(nt, "   " , self.input)
+        # print(nt, "   " , self.input)
 
         if self.input is "EOF":
             if 'ε' in self.first_sets[nt]:
                 return
             else:
-                print("SOME ERROR SHOULD BE GENERATED HERE!") #TODO geenrate corresponding error
+                print(self.line_number, "Syntax Error! Unexpected EndOfFile")
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
             print(self.line_number, "Syntax Error! Unexpected ", self.input)
@@ -94,8 +94,14 @@ class Parser:
         if (self.input in self.first_sets[nt]) or \
                 ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
             for next_state in self.table[(nt, self.input)]:
-                # print(nt, next_state)
+                # print("HERE!", nt, next_state)
                 if next_state in self.terminals:
+                    if nt == 'program':
+                        if next_state != 'EOF':
+                            print(self.line_number, "Syntax Error! Malformed Input")
+
+                    if self.input is None:
+                        self.get_and_split_token()
                     if next_state == self.input:
                         self.input = None
                     else:

@@ -48,4 +48,4 @@ if __name__ == '__main__':
                         non_terminals=non_terminals, terminals=terminals)
 
     parser.parse('program', 1)
-    print(parser.table)
+    # print(parser.table)
