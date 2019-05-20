@@ -1,44 +1,48 @@
-program ,
-declaration-list EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-S1 EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-var-declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-T1 int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-type-specifier ID,
-fun-declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, },
-params ),
-param-list ),
-S2 ),
-param ,, ),
-T2 ,, ),
-compound-stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-statement-list }, case, default,
-S3 }, case, default,
-statement {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-expression-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-selection-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-iteration-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-return-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-T3 {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-switch-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else, case, default,
-case-stmts default, },
-S4 default, },
-case-stmt case, default, },
-default-stmt },
-expression ;, ), ], ,,
-var =, *, +, -, <, ==, ;, ), ], ,,
-T4 =, *, +, -, <, ==, ;, ), ], ,,
-simple-expression ;, ), ], ,,
-T5 ;, ), ], ,,
-relop +, -, (, ID, NUM,
-additive-expression <, ==, ;, ), ], ,,
-S5 <, ==, ;, ), ], ,,
-addop +, -, (, ID, NUM,
-term +, -, <, ==, ;, ), ], ,,
-S6 +, -, <, ==, ;, ), ], ,,
-signed-factor *, +, -, <, ==, ;, ), ], ,,
-factor *, +, -, <, ==, ;, ), ], ,,
-call *, +, -, <, ==, ;, ), ], ,,
-args ),
-arg-list ),
-S7 ),
+program -|
+declaration-list EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+declaration-list_1 EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+Fint int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+FID_5 int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+Fvoid int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+FID_6 int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+FID_1 int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }
+type-specifier ID
+params )
+Fvoid_1 )
+param-list_1 )
+param comma, )
+Ftype-specifier_1 comma, )
+FID_2 comma, )
+compound-stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+statement-list }, case, default
+statement-list_1 }, case, default
+statement {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+expression-stmt {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+selection-stmt {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+iteration-stmt {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+return-stmt {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+Freturn {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+switch-stmt {, continue, break, ;, if, while, return, switch, ID, (, NUM, +, -, }, else, case, default
+case-stmts default, }
+case-stmts_1 default, }
+case-stmt case, default, }
+default-stmt }
+expression ;, ), ], comma
+FID_3 ;, ), ], comma
+FFID ;, ), ], comma
+F= ;, ), ], comma
+FID =, *, <, +, -, ;, ), ==, ], comma
+Fadditive-expression ;, ), ], comma
+RELOP +, -, (, ID, NUM
+additive-expression ;, ), ], comma
+additive-expression_1 <, ==, ;, ), ], comma
+addop +, -, (, ID, NUM
+term +, -, <, ==, ;, ), ], comma
+term_1 +, -, <, ==, ;, ), ], comma
+single-factor *, +, -, <, ==, ;, ), ], comma
+factor *, +, -, <, ==, ;, ), ], comma
+FID_4 *, +, -, <, ==, ;, ), ], comma
+args )
+arg-list )
+arg-list_1 )

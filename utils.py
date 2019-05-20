@@ -37,5 +37,14 @@ def read_first_follow(path_first, path_follow):
     return first_sets, follow_sets
 
 
-def func():
-    pass
+def get_non_terminals(path):
+    path = 'LL1.txt'
+    non_terminals = []
+    last_nt = None
+    with open(path, 'r') as f:
+        for line in f:
+            nt_new, _ = line.split(' ->')
+            if nt_new != last_nt:
+                last_nt = nt_new
+                non_terminals.append(nt_new)
+    return non_terminals

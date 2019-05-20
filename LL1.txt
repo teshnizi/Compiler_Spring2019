@@ -43,10 +43,10 @@ iteration-stmt -> while  ( expression ) statement
 return-stmt -> return Freturn
 Freturn -> ;
 Freturn -> expression ;
-switch-stmt -> switch  ( expression ) { case-stmt default-stmt }
-case-stmt -> case-stmt_1
-case-stmt_1 -> case-stmt case-stmt_1
-case-stmt_1 -> ε
+switch-stmt -> switch  ( expression ) { case-stmts default-stmt }
+case-stmts -> case-stmts_1
+case-stmts_1 -> case-stmt case-stmts_1
+case-stmts_1 -> ε
 case-stmt -> case NUM : statement-list
 default-stmt -> default : statement-list
 default-stmt -> ε

@@ -1,6 +1,6 @@
 import lexer
 import parser
-from utils import read_rules, read_first_follow
+from utils import read_rules, read_first_follow, get_non_terminals
 
 
 def func_phase1(lexer):
@@ -40,16 +40,7 @@ if __name__ == '__main__':
 
     rules = read_rules('LL1.txt')
     first_sets, follow_sets = read_first_follow('first_sets_scratch.txt', 'follow_sets_scratch.txt')
-
-    non_terminals = ['program', 'declaration-list', 'declaration-list_1', 'Fint', 'Fvoid', 'declaration', 'FID_1',
-                     'FID_2', 'FID_3', 'FID_4', 'FID_5', 'FID_6', 'type-specifier', 'Fvoid_1',
-                     'param-list_1', 'params', 'param', 'compound-stmt', 'statement-list_1', 'Ftype-specifier_1',
-                     'statement-list', 'statement', 'expression-stmt', 'selection-stmt', 'case-stmt_1',
-                     'iteration-stmt', 'return-stmt', 'switch-stmt', 'case-stmt', 'default-stmt',
-                     'expression', 'simple-expression', 'relop', 'additive-expression',
-                     'addop', 'FID', 'term', 'factor', 'args', 'arg-list', 'Freturn', 'Fadditive-expression',
-                     'additive-expression_1', 'term_1', 'single-factor','arg-list_1']
-    print(len(non_terminals))
+    non_terminals = get_non_terminals('LL1.txt')
      
-    #parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
-    #                       non_terminals=non_terminals, terminals=terminals)
+    parser = parser.Parser(lexer=lexer, rules=rules, first_sets=first_sets, follow_sets=follow_sets,
+                           non_terminals=non_terminals, terminals=terminals)
