@@ -53,7 +53,7 @@ class Parser:
     def get_and_split_token(self):
         self.input = self.lexer.get_next_token()
         if self.input[0] == False:
-            self.input = None
+            self.input = "EOF"
             return
 
         self.line_number = self.input[1][0]
@@ -69,8 +69,15 @@ class Parser:
 
         self.tree_file.write(' |    ' * depth + nt + '\n')
 
+        print(nt, "   " , self.input)
         if self.input is None:
             self.get_and_split_token()
+
+        if self.input is "EOF":
+            if 'ε' in self.first_sets[nt]:
+                return
+            else:
+                print("SOME ERROR SHOULD BE GENERATED HERE!") #TODO geenrate corresponding error
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
             print(self.line_number, "Syntax Error! Unexpected ", self.input)

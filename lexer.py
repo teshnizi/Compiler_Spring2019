@@ -23,7 +23,13 @@ class Lexer:
         return False
 
     def go_to_next_state(self):
-        ch = self.input_string[self.iterator]
+
+        if self.iterator >= len(self.input_string):
+            # ch = "EOF"
+            return (False, (self.line_number, "EOF", "EOF"))
+        else:
+            ch = self.input_string[self.iterator]
+
         token = (0, 0, 0)
         self.iterator += 1
         # print("State: " + self.state + "  character: " + ch)
