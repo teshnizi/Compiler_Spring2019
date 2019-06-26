@@ -49,6 +49,7 @@ class Parser:
             # self.input_buffer_stack = self.input_buffer_stack[1:-1]
 
         self.input = self.lexer.get_next_token()
+        # self.tree_file.write("--------------------" + str(self.input) + "  inp\n")
 
         if self.input[0] == False:
             self.input = "EOF"
@@ -66,7 +67,7 @@ class Parser:
 
     def parse(self, nt, depth):
 
-        print(nt , depth)
+        # print("ppp " + nt , depth)
 
         if nt == 'ε':
             return
@@ -83,7 +84,9 @@ class Parser:
                 self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected EndOfFile\n")
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
-            self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected " + str(self.input) + "\n")
+            # self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected " + str(self.input) + "\n")
+            # self.tree_file.write(self.input + "\tERROR: " + nt + " :: \n" + str(self.follow_sets[nt]) + " \n" + str(self.first_sets[nt]) + "\n")
+            # self.tree_file.write("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n")
             self.get_and_split_token()
             if self.input == 'EOF':
                 return
@@ -99,14 +102,17 @@ class Parser:
                     if nt == 'program':
                         if next_state != 'EOF':
                             self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input\n")
-
                     if self.input is None:
-                        self.get_and_split_token()
+                       self.get_and_split_token()
+                    #
+                    # self.tree_file.write("\tMESSAGE: " + nt + " " + str(self.input) + " " + next_state + "\n")
+
                     if next_state == self.input:
                         self.input = None
                     else:
-                        self.error_file.write(str(self.line_number) + " Syntax Error! Missing \n" + next_state)
-                        return
+                        self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")
+                    # self.tree_file.write("\tMESSAGE: " + nt + " " + str(self.input) + " " + next_state + "\n")
+                        # return
                 else:
                     self.parse(next_state, depth+1)
         else:

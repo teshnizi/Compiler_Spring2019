@@ -1,20 +1,20 @@
+int a;
+a = 2;
 
-void main(void){
-    int a[3];
-    a[1] = 0;
-    int p = 5;
-    // comment 2
-    a = 2 + +2;
-    a = a + -3;
-    cde = a;
-    if (b /* cmnt1 */ == 3) {
-        a = 3;
-        cd!e = -7;
-    }
-    else
-    {
-        b = a < cde;
-        {cde = @2;
-    }}
-    return;
+void foo (int c)
+{
+	int d;
+	d = c + -2;
+	return d * ;
+}
+
+void main(void)
+{
+	int s;
+	int w = 3;
+	if a == 2) foo(w);
+	else {
+		s = [w + * -2;
+	}
+	return
 }
