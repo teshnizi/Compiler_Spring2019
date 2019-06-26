@@ -1,2 +1,1 @@
-10. (cd!, invalid input) 
-15. (@, invalid input) 
+1. (4, invalid input) 

@@ -33,7 +33,9 @@ def func_phase1(lexer):
 
 if __name__ == '__main__':
 
-    lexer = lexer.Lexer("input_code1.c")
+    lexer = lexer.Lexer("All Tests/Parser/Test Error - Parser.txt")
+
+    # func_phase1(lexer)
 
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',

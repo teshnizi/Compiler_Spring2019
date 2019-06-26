@@ -1,8 +1,8 @@
 import os
 from lexer import Lexer
 
-
 class Parser:
+
     def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals, tree_file, syntax_errors_file):
         self.lexer = lexer
         self.non_terminals = non_terminals
@@ -15,45 +15,41 @@ class Parser:
         self.first_sets = first_sets
         self.follow_sets = follow_sets
         self.rules = rules
+        self.input_buffer_stack = []
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
 
         for nt in self.non_terminals:
-            # print("Non terminal: ", nt)
             for t in self.terminals:
-                # print("     Terminal: ", t)
+
                 for rule in rules[nt]:
-                    # print("         rule:" , rule)
 
                     if rule[0] == t:
-                        # if (nt,t) in table:
-                            # print("             !!!!!!!!!!!!!Conflict1", (nt, t), table[(nt,t)])
                         table[(nt,t)] = rule
-                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
                     if rule[0] in self.non_terminals and t in first_sets[rule[0]]:
-                        # if (nt,t) in table:
-                        #     print("             !!!!!!!!!!!!!Conflict2", (nt, t), table[(nt,t)])
                         table[(nt, t)] = rule
-                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
                     if rule[0] in self.non_terminals and t in follow_sets[rule[0]] and 'ε' in first_sets[rule[0]]:
-                        # if (nt,t) in table:
-                        #     print("             !!!!!!!!!!!!!Conflict3", (nt, t), table[(nt,t)])
                         table[(nt,t)] = rule
-                        # print("                 TABLE UPDATED: ", (nt, t), rule)
 
                     if rule[0] == 'ε' and t in follow_sets[nt]:
                         table[(nt,t)] = rule
-                        # print("                 TABLE UPDATED: ", (nt, t), rule)
+
 
         return table
-        # if (nt,t) in table:
-        #     print("Conflict", table[(nt,t)])
+
 
     def get_and_split_token(self):
+
+        # if len(self.input_buffer_stack) > 0:
+            # self.input = self.input_buffer_stack[0]
+            # if len(self.input_buffer_stack)
+            # self.input_buffer_stack = self.input_buffer_stack[1:-1]
+
         self.input = self.lexer.get_next_token()
+
         if self.input[0] == False:
             self.input = "EOF"
             return
@@ -70,44 +66,48 @@ class Parser:
 
     def parse(self, nt, depth):
 
+        print(nt , depth)
+
         if nt == 'ε':
             return
 
-        self.tree_file.write(' |    ' * depth + nt + '\n')
-
-        # print(nt, "   " , self.input)
+        self.tree_file.write(' | ' * depth + nt + '\n')
 
         if self.input is None:
             self.get_and_split_token()
-
-        # print(nt, "   " , self.input)
 
         if self.input is "EOF":
             if 'ε' in self.first_sets[nt]:
                 return
             else:
-                self.error_file.write(self.line_number + " Syntax Error! Unexpected EndOfFile")
+                self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected EndOfFile\n")
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
-            self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected " + str(self.input))
+            self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected " + str(self.input) + "\n")
             self.get_and_split_token()
+            if self.input == 'EOF':
+                return
 
+        # flag = False
+        # while flag == False:
+        flag = False
         if (self.input in self.first_sets[nt]) or \
                 ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
             for next_state in self.table[(nt, self.input)]:
-                # print("HERE!", nt, next_state)
+
                 if next_state in self.terminals:
                     if nt == 'program':
                         if next_state != 'EOF':
-                            self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input")
+                            self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input\n")
 
                     if self.input is None:
                         self.get_and_split_token()
                     if next_state == self.input:
                         self.input = None
                     else:
-                        self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state)
+                        self.error_file.write(str(self.line_number) + " Syntax Error! Missing \n" + next_state)
+                        return
                 else:
                     self.parse(next_state, depth+1)
         else:
-            self.error_file.write(str(self.line_number) + " Syntax Error! Missing ", nt + " couldn't find the appropriate rule: " + str(self.rules[nt]))
+            self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + nt + " couldn't find the appropriate rule: " + str(self.rules[nt]) + "\n")

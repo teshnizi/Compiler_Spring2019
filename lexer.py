@@ -28,12 +28,16 @@ class Lexer:
             # ch = "EOF"
             return (False, (self.line_number, "EOF", "EOF"))
         else:
+            if self.state == "error":
+                self.iterator-=1
+                # ch = self.input_string[self.iterator]
             ch = self.input_string[self.iterator]
 
         token = (0, 0, 0)
         self.iterator += 1
         # print("State: " + self.state + "  character: " + ch)
 
+        # print("LLLL", ch, self.state)
         if self.state == "start":
             if self.type_of(ch) == "digit":
                 self.state = "num"
@@ -101,6 +105,8 @@ class Lexer:
             else:
                 self.buffer = ch
                 self.state = "error"
+
+            # print(self.state)
             return not (len(self.input_string) == self.iterator), token
 
         if self.state == "fcomment":
