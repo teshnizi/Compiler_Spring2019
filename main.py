@@ -32,9 +32,7 @@ def func_phase1(lexer):
 
 if __name__ == '__main__':
 
-    lexer = lexer.Lexer("All Tests/Parser/Test - Parser.txt")
-
-    # func_phase1(lexer)
+    lexer = lexer.Lexer("All Tests/Parser/Test Error - Parser.txt")
 
     terminals = ['EOF', 'ID', ';', '[', 'NUM', ']', 'int', 'void', '{', '}', 'continue', 'break', 'if', 'else',
                  'while', 'return', '(', ')', 'switch', 'case', 'default', '+', '-', ',', '==', '=', '<', '>',
@@ -49,4 +47,3 @@ if __name__ == '__main__':
                         non_terminals=non_terminals, terminals=terminals, tree_file=tree_file, syntax_errors_file=syntax_errors_file)
 
         parser.parse('program', 0)
-    # print(parser.table)
