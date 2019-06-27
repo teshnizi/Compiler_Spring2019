@@ -1,9 +1,10 @@
 import os
 from lexer import Lexer
+from semantic_intermediate_code import SemanticIntermediateCode
 
 class Parser:
-
     def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals, tree_file, syntax_errors_file):
+        self.semantic_intermediate_code = SemanticIntermediateCode()
         self.lexer = lexer
         self.non_terminals = non_terminals
         self.terminals = terminals
@@ -37,9 +38,7 @@ class Parser:
                     if rule[0] == 'ε' and t in follow_sets[nt]:
                         table[(nt,t)] = rule
 
-
         return table
-
 
     def get_and_split_token(self):
 
@@ -60,7 +59,6 @@ class Parser:
             self.input = self.input[1][2]
 
     def parse(self, nt, depth):
-
         if nt == 'ε':
             return
 
@@ -82,7 +80,8 @@ class Parser:
 
         if (self.input in self.first_sets[nt]) or \
                 ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
-            for next_state in self.table[(nt, self.input)]:
+            backup = self.input
+            for next_state in self.table[(nt, backup)]:
 
                 if next_state in self.terminals:
                     if nt == 'program':
@@ -92,11 +91,15 @@ class Parser:
                        self.get_and_split_token()
 
                     if next_state == self.input:
+                        self.semantic_intermediate_code.analyze(nt, self, next_state, self.input)
                         self.input = None
                     else:
                         self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")
 
                 else:
                     self.parse(next_state, depth+1)
+                self.semantic_intermediate_code.analyze(nt, self, next_state, self.input)
+                self.semantic_intermediate_code.generate()
+
         else:
             self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + nt + " couldn't find the appropriate rule: " + str(self.rules[nt]) + "\n")

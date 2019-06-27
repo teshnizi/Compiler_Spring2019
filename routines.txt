@@ -1,0 +1,59 @@
+legend:
+    \\ is used for semantic routines
+    # is used for
+
+1)
+fun-declaration -> type-specifier ID ( params ) compound-stmt
+    We can check here if ID matches main. If it never does, throw out the "main function not found!" error
+    If it does set a flag to True. Another function declaration after this point then what?!
+    Also Keep parsing until you get void output(int a);
+--------
+2)
+type-specifier -> int | void
+    Push the type specifier into SS for two reasons:
+    1) semantic error of a void variable
+    2) to check void main() is not missing
+
+var-declaration -> type-specifier ID \\not_void; | type-specifier ID [ NUM ] \\not void;
+    type-specifier has been pushed to stack.
+    \\not_void function will check if the type-specifier is void
+--------
+3)
+To keep track of scopes we may have a class Scope with an attribute parent which shows the parent scope.
+var -> ID \\check_scope| ID \\check_scope [ expression ]
+--------
+4)
+additive-expression -> additive-expression addop term #add_subtract | term
+addop -> + | -
+    (by pushing the + or - into the semantic stack we can use it in add_subtract routine)
+--------
+5)
+simple-expression -> additive-expression relop additive-expression #cmp | additive-expression
+relop -> < #push_relop | == #push_relop
+--------
+6)
+expression -> var = expression #assign | simple-expression
+    #assign does not pop expression from SS
+term -> term * signed-factor #mult | signed-factor
+--------
+7)
+expression-stmt -> continue \\inside_loop;
+if \\inside_loops returns False throws "No ’while’ found for ’continue’" error
+--------
+8)
+  expression-stmt -> expression ; #pop_expression
+    pops the expression value from the stack
+--------
+9)
+  iteration-stmt -> #label while ( expression ) #save statement #while
+
+--------
+10)
+  selection-stmt -> if ( expression ) #save statement else #jpf_save statement #jp
+--------
+11)
+  call -> ID #return_address ( args )
+--------
+
+12)
+var -> ID  | ID [ expression ]
