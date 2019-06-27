@@ -2,7 +2,6 @@ import lexer
 import parser
 from utils import read_rules, read_first_follow, get_non_terminals
 
-
 def func_phase1(lexer):
     with open('scanner.txt', 'w') as fout, open('errors_lexical.txt', 'w') as ferr:
         last_line_out = 0
@@ -33,7 +32,7 @@ def func_phase1(lexer):
 
 if __name__ == '__main__':
 
-    lexer = lexer.Lexer("All Tests/Parser/Test Error - Parser.txt")
+    lexer = lexer.Lexer("All Tests/Parser/Test - Parser.txt")
 
     # func_phase1(lexer)
 
@@ -50,5 +49,4 @@ if __name__ == '__main__':
                         non_terminals=non_terminals, terminals=terminals, tree_file=tree_file, syntax_errors_file=syntax_errors_file)
 
         parser.parse('program', 0)
-
     # print(parser.table)
