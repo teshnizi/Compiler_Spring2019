@@ -1,0 +1,6 @@
+1: (KEYWORD, void) (ID, main) (SYMBOL, ( ) (KEYWORD, void) (SYMBOL ) ) (SYMBOL, { ) (KEYWORD, int) (ID, a23) (SYMBOL, ; ) (KEYWORD, int) (ID, d) (SYMBOL, [ ) (NUM, 23) (SYMBOL, ] ) (SYMBOL, ;) (ID, a23) (SYMBOL, = ) (NUM, 45) (SYMBOL, + ) (SYMBOL, - ) (NUM, 4) (SYMBOL, +)
+2: (ID, d) )(SYMBOL, [ ) (NUM, 4) (SYMBOL, ] ) (SYMBOL, *) (NUM, 23) (ID, a) (SYMBOL, ;) (ID, return2) (NUM, 2) (NUM, 3) (SYMBOL, } )
+
+
+Errors:
+1: 23.	32/

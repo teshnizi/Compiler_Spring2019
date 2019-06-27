@@ -1,0 +1,27 @@
+int a;
+int foo(int var) {
+	int b;
+	b = 1;
+	while (0 < var) {
+		var = var - 1;
+		b = b * 2 + 1;
+		if (b == 3) {
+			break;
+		} else continue;
+	}
+	return b;
+}
+void main(void){
+	int d;
+	void foo2(int c) {
+		d = d + c;
+	}
+	d = 2;
+	switch (foo2(d + 1)) {
+		case 1:
+			d = d * -2;
+			break;
+		default:
+			d = -2 + d;
+	}
+}
