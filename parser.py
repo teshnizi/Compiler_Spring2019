@@ -17,6 +17,7 @@ class Parser:
         self.follow_sets = follow_sets
         self.rules = rules
         self.input_buffer_stack = []
+        self.semantic_input = 0
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
@@ -52,6 +53,7 @@ class Parser:
             return
 
         self.line_number = self.input[1][0]
+        self.semantic_input = self.input[1][2]
 
         if self.input[1][1] == "ID" or self.input[1][1] == "NUM":
             self.input = self.input[1][1]
@@ -91,14 +93,14 @@ class Parser:
                        self.get_and_split_token()
 
                     if next_state == self.input:
-                        self.semantic_intermediate_code.analyze(nt, self, next_state, self.input)
+                        self.semantic_intermediate_code.analyze(nt, self, next_state, self.semantic_input)
                         self.input = None
                     else:
                         self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")
 
                 else:
                     self.parse(next_state, depth+1)
-                self.semantic_intermediate_code.analyze(nt, self, next_state, self.input)
+                self.semantic_intermediate_code.analyze(nt, self, next_state, self.semantic_input)
                 self.semantic_intermediate_code.generate()
 
         else:
