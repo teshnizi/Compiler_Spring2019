@@ -1,0 +1,94 @@
+program -> declaration-list EOF #main_defined_routine
+declaration-list -> declaration-list_1
+declaration-list_1 -> declaration declaration-list_1
+declaration-list_1 -> ε
+declaration -> int #pint Fint
+declaration -> void #pvoid Fvoid
+Fint -> #pid ID FID_5
+FID_5 -> FID_1
+FID_5 -> ( params ) compound-stmt  TODO: We have to save the params and their types in a table for each function
+Fvoid -> #pid ID FID_6
+FID_6 -> FID_1
+FID_6 -> #check_main ( params ) compound-stmt TODO: We have to save the params and their types in a table for each function
+FID_1 -> ; #define_var
+FID_1 -> [ #pnum NUM ] ; #define_arr
+type-specifier -> int #pint
+type-specifier -> void #pvoid
+params -> int #pint Ftype-specifier_1 param-list_1
+params -> void #pvoid Fvoid_1
+Fvoid_1 -> Ftype-specifier_1 param-list_1
+Fvoid_1 -> ε
+param-list_1 -> , param param-list_1  TODO: We have to save the params and their types in a table for each function
+param-list_1 -> ε
+param -> type-specifier Ftype-specifier_1
+Ftype-specifier_1 -> #pid ID FID_2
+FID_2 -> ε
+FID_2 -> [ ]
+compound-stmt -> { declaration-list statement-list }
+statement-list -> statement-list_1
+statement-list_1 -> statement statement-list_1
+statement-list_1 -> ε
+statement -> expression-stmt
+statement -> compound-stmt
+statement -> selection-stmt
+statement -> iteration-stmt
+statement -> return-stmt
+statement -> switch-stmt
+expression-stmt -> expression ; #pop_expression
+expression-stmt -> continue ; #continue_routine
+expression-stmt -> break ;  TODO: not sure about the appropriate routine here!
+expression-stmt -> ;
+selection-stmt -> if  ( expression ) #save statement else #jpf_save statement #jp
+iteration-stmt -> while #label ( expression ) #save statement #while_routine
+return-stmt -> return Freturn
+Freturn -> ; #return_routine1
+Freturn -> expression ; #return_routine2 TODO: returning to the caller may be different for this rule and the above rule. value of expression is on top of stack here but not in above!!
+switch-stmt -> switch  ( expression ) { case-stmts default-stmt }  TODO: routine for switch-case
+case-stmts -> case-stmts_1  TODO: routine for switch-case
+case-stmts_1 -> case-stmt case-stmts_1   TODO: routine for switch-case
+case-stmts_1 -> ε  TODO: routine for switch-case
+case-stmt -> case NUM : statement-list  TODO: routine for switch-case
+default-stmt -> default : statement-list  TODO: routine for switch-case
+default-stmt -> ε
+expression -> #pid ID FID_3
+expression -> ( expression ) term_1 additive-expression_1 Fadditive-expression
+expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
+expression -> + factor term_1 additive-expression_1 Fadditive-expression
+expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
+FID_3 -> FID FFID
+FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression  TODO: A jump here to the beginnig of the callee??
+FFID -> = F= #assign
+FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression
+FFID -> addop term #addop_routine additive-expression_1 Fadditive-expression
+FFID -> < additive-expression #lt
+FFID -> == additive-expression #eq
+FFID -> ε
+F= -> expression
+F= -> = additive-expression  TODO: Safely Omit this rule!!!!!!
+FID -> ε
+FID -> [ expression ]  TODO: a routine to find the espression-th element of the array
+Fadditive-expression -> RELOP additive-expression #relop_routine
+Fadditive-expression -> ε
+RELOP -> < #plt
+RELOP -> == #peq
+additive-expression -> term additive-expression_1
+additive-expression_1 -> addop term #addop_routine additive-expression_1
+additive-expression_1 -> ε
+addop -> + #padd
+addop -> - #psub
+term -> single-factor term_1
+term_1 -> * single-factor #mult term_1
+term_1 -> ε
+single-factor -> factor
+single-factor -> + factor
+single-factor -> - factor #neg
+factor ->  ( expression )
+factor -> #pid ID FID_4
+factor -> #pnum NUM
+FID_4 -> FID
+FID_4 -> #pfunction ( args )  TODO: A jump here to the beginnig of the callee??
+args -> arg-list
+args -> ε
+arg-list -> expression arg-list_1
+arg-list_1 -> , expression arg-list_1
+arg-list_1 -> ε

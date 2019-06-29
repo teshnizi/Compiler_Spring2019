@@ -1,6 +1,6 @@
 import os
 from lexer import Lexer
-from semantic_intermediate_code import SemanticIntermediateCode
+from intermediate_code import SemanticIntermediateCode
 
 class Parser:
     def __init__(self, lexer, rules, first_sets, follow_sets, non_terminals, terminals, tree_file, syntax_errors_file):
@@ -93,15 +93,12 @@ class Parser:
                        self.get_and_split_token()
 
                     if next_state == self.input:
-                        self.semantic_intermediate_code.analyze(nt, self, next_state, self.semantic_input)
                         self.input = None
                     else:
                         self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")
 
                 else:
                     self.parse(next_state, depth+1)
-                self.semantic_intermediate_code.analyze(nt, self, next_state, self.semantic_input)
-                self.semantic_intermediate_code.generate()
 
         else:
             self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + nt + " couldn't find the appropriate rule: " + str(self.rules[nt]) + "\n")
