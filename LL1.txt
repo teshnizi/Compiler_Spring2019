@@ -6,10 +6,10 @@ declaration -> int #pint Fint
 declaration -> void #pvoid Fvoid
 Fint -> #pid ID FID_5
 FID_5 -> FID_1
-FID_5 -> ( params ) compound-stmt
+FID_5 -> #start_func_scope ( params ) compound-stmt #end_func_scope
 Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
-FID_6 -> #check_main ( params ) compound-stmt
+FID_6 -> #start_func_scope ( params ) #check_main compound-stmt #end_func_scope
 FID_1 -> #push1 ; #define_var
 FID_1 -> [ #pnum NUM ] ; #define_var
 type-specifier -> int #pint
@@ -22,8 +22,8 @@ param-list_1 -> , param param-list_1
 param-list_1 -> ε
 param -> type-specifier Ftype-specifier_1
 Ftype-specifier_1 -> #pid ID FID_2
-FID_2 -> ε
-FID_2 -> [ ]
+FID_2 -> ε #define_param
+FID_2 -> [ ] #define_arr_param
 compound-stmt -> { declaration-list statement-list }
 statement-list -> statement-list_1
 statement-list_1 -> statement statement-list_1
@@ -35,15 +35,15 @@ statement -> iteration-stmt
 statement -> return-stmt
 statement -> switch-stmt
 expression-stmt -> expression ; #pop_expression
-expression-stmt -> continue ; #continue_routine
-expression-stmt -> break ;
+expression-stmt -> continue #check_continue_scope ;
+expression-stmt -> break #check_break_scope ;
 expression-stmt -> ;
-selection-stmt -> if  ( expression ) #save statement else #jpf_save statement #jp
-iteration-stmt -> while #label ( expression ) #save statement #while_routine
+selection-stmt -> if  ( expression ) #save #start_if_scope statement #end_if_scope else #jpf_save #start_else_scope statement #end_else_scope #jp
+iteration-stmt -> while #label ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
 return-stmt -> return Freturn
-Freturn -> ; #return_routine1
-Freturn -> expression ; #return_routine2
-switch-stmt -> switch  ( expression ) { case-stmts default-stmt }
+Freturn -> #return_routine1 ;
+Freturn -> expression #return_routine2 ;
+switch-stmt -> switch  ( expression ) { #start_switch_scope case-stmts default-stmt #end_switch_scope }
 case-stmts -> case-stmts_1
 case-stmts_1 -> case-stmt case-stmts_1
 case-stmts_1 -> ε
@@ -65,8 +65,8 @@ FFID -> == additive-expression #eq
 FFID -> ε
 F= -> expression
 F= -> = additive-expression
-FID -> #push0 ε #calculate_indexed_value
-FID -> [ expression ] #calculate_indexed_value
+FID -> #push0 ε #calculate_indexed_var
+FID -> [ expression ] #calculate_indexed_var
 Fadditive-expression -> RELOP additive-expression #relop_routine
 Fadditive-expression -> ε
 RELOP -> < #plt
@@ -86,7 +86,7 @@ factor ->  ( expression )
 factor -> #pid ID FID_4
 factor -> #pnum NUM
 FID_4 -> FID
-FID_4 -> #pfunction ( args )
+FID_4 -> #pfunction ( args ) #call_funnction
 args -> arg-list
 args -> ε
 arg-list -> expression arg-list_1

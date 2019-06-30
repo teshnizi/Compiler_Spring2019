@@ -119,8 +119,6 @@ class Parser:
                     if self.input is None:
                        self.get_and_split_token()
                     if next_state == self.input:
-
-
                         if self.waiting_for_id:
                             self.waiting_for_id = False
                             self.semantic_intermediate_code.pid(self.semantic_input)
