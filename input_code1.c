@@ -16,8 +16,5 @@ void main(void) {
 		}
 		c = b + 3;
 	} else c = 2 * b + 1;
-
-
-
 }
 

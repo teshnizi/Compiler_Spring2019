@@ -126,7 +126,7 @@ class SemanticIntermediateCode:
 
     def calculate_indexed_value(self):
         '''
-        pops two a variable and an index from the stack and pushes the corresponding address to the stack;
+        pops a variable and an index from the stack and pushes the corresponding address to the stack;
         '''
         var = self.get_var(self.SS[-2])
         address, size = var[0], var[1]
@@ -203,8 +203,3 @@ class SemanticIntermediateCode:
     def return_routine(self):
         pass  # TODO: perhaps a jump to the next line of calling the callee from caller! address is on top of stack?
 
-    def find_addr(self, input):
-        pass  # TODO: find the adrress of ID in memory
-
-    def set_addr(self, input_token):
-        pass
