@@ -18,6 +18,7 @@ class Parser:
         self.rules = rules
         self.input_buffer_stack = []
         self.semantic_input = 0
+        self.waiting_for_id = False
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
@@ -27,16 +28,22 @@ class Parser:
 
                 for rule in rules[nt]:
 
-                    if rule[0] == t:
+                    i = 0;
+                    while rule[i][0] == '#':
+                        i += 1
+
+                    first_terminal  = rule[i]
+
+                    if first_terminal == t:
                         table[(nt,t)] = rule
 
-                    if rule[0] in self.non_terminals and t in first_sets[rule[0]]:
+                    if first_terminal in self.non_terminals and t in first_sets[first_terminal]:
                         table[(nt, t)] = rule
 
-                    if rule[0] in self.non_terminals and t in follow_sets[rule[0]] and 'ε' in first_sets[rule[0]]:
+                    if first_terminal in self.non_terminals and t in follow_sets[first_terminal] and 'ε' in first_sets[first_terminal]:
                         table[(nt,t)] = rule
 
-                    if rule[0] == 'ε' and t in follow_sets[nt]:
+                    if first_terminal == 'ε' and t in follow_sets[nt]:
                         table[(nt,t)] = rule
 
         return table
@@ -64,6 +71,7 @@ class Parser:
         if nt == 'ε':
             return
 
+
         self.tree_file.write(' | ' * depth + nt + '\n')
 
         if self.input is None:
@@ -83,9 +91,17 @@ class Parser:
         if (self.input in self.first_sets[nt]) or \
                 ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
             backup = self.input
-            for next_state in self.table[(nt, backup)]:
+            print(nt, backup)
+            for index in range(len(self.table[(nt, backup)])):
+                table = self.table[(nt, backup)]
+                next_state = table[index]
 
-                if next_state in self.terminals:
+                if next_state[0] == '#':
+                    pass
+                    if next_state == "#pid":
+                        self.waiting_for_id = True
+
+                elif next_state in self.terminals:
                     if nt == 'program':
                         if next_state != 'EOF':
                             self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input\n")
@@ -93,6 +109,11 @@ class Parser:
                        self.get_and_split_token()
 
                     if next_state == self.input:
+
+                        if self.waiting_for_id:
+                            self.waiting_for_id = False
+                            self.semantic_intermediate_code.pid(self.semantic_input)
+
                         self.input = None
                     else:
                         self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")

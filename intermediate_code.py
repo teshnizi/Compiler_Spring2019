@@ -1,13 +1,32 @@
-
 class SemanticIntermediateCode:
     def __init__(self):
         self.SS = list()
         self.line = 0
         self.PB = dict()
         self.main_defined_flag = False
+        self.temporary_SP = 500
+        self.variables_SP = 1000
+        self.variables = {}  # contains items of the form name:(address, size (in bytes))
 
-    def pid(self):
-        pass  # TODO: find address of following ID in the rule and push it into the stack
+    def get_temp(self):
+        self.temporary_SP += 4
+        return self.temporary_SP - 4
+
+
+    def get_var(self, name):
+        '''
+        gets a variable name as parameter, returns address and size of the corresponding variable if it exists,
+        generates error otherwise.
+        '''
+        if name not in self.variables.keys():
+            print("Undefined variable!")
+        else:
+            return self.variables[name]
+
+    def pid(self, id):
+        self.SS.append(id)
+        print("#pid is called!", id)
+        # pass  # TODO: find address of following ID in the rule and push it into the stack
 
     def pint(self):
         '''
@@ -68,7 +87,7 @@ class SemanticIntermediateCode:
         self.line += 1
 
     def addopp_routine(self):
-        t = None  #TODO: get an address for t
+        t = None  # TODO: get an address for t
         operand1, operand2, addop = self.SS[-3], self.SS[-2], self.SS[-1]
         self.PB[self.line] = '({},{},{})'.format(addop, operand1, operand2, t)
         self.SS = self.SS[:-3]
@@ -115,8 +134,8 @@ class SemanticIntermediateCode:
         self.SS.pop()
 
     def while_loop(self):
-        self.PB[self.SS[-1]] =  '(jpf,{},{},)'.format(self.SS[-2], self.line + 1)
-        self.PB[self.line] =  '(jp,{},,)'.format(self.SS[-3])
+        self.PB[self.SS[-1]] = '(jpf,{},{},)'.format(self.SS[-2], self.line + 1)
+        self.PB[self.line] = '(jp,{},,)'.format(self.SS[-3])
         self.line += 1
         self.SS = self.SS[-3]
 
@@ -128,17 +147,25 @@ class SemanticIntermediateCode:
         if var_type == 'void':
             print('Illegal type of void.')
         else:
-            pass  # TODO: assign an address to the defined variable
+            self.variables[var_name] = (self.variables_SP, 4)
+            self.variables_SP += 4
 
         self.SS = self.SS[-2]
 
     def check_main(self):
-        func_type, func_name  = self.SS[-2], self.SS[-1]
+        func_type, func_name = self.SS[-2], self.SS[-1]
         if func_type == 'void' and func_name == 'main':
             self.main_defined_flag = True
 
     def define_arr(self):
-        pass  # TODO: assign an address to the defined array
+        arr_size, arr_name, arr_type = self.SS[-1], self.SS[-2], self.SS[-3]
+        if arr_type == 'void':
+            print('Illegal type of void.')
+        else:
+            self.variables[arr_name] = (self.variables_SP, 4 * arr_size)
+            self.variables_SP += 4 * arr_size
+
+        self.SS = self.SS[-3]
 
     def main_defined_routine(self):
         if not self.main_defined_flag:

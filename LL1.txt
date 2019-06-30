@@ -2,16 +2,16 @@ program -> declaration-list EOF
 declaration-list -> declaration-list_1
 declaration-list_1 -> declaration declaration-list_1
 declaration-list_1 -> ε
-declaration -> int Fint
-declaration -> void Fvoid
-Fint -> ID FID_5
+declaration -> int #pint Fint
+declaration -> void #pvoid Fvoid
+Fint -> #pid ID FID_5
 FID_5 -> FID_1
 FID_5 -> ( params ) compound-stmt
-Fvoid -> ID FID_6
+Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
-FID_6 -> ( params ) compound-stmt
-FID_1 -> ;
-FID_1 -> [ NUM ] ;
+FID_6 -> #check_main ( params ) compound-stmt
+FID_1 -> ; #define_var
+FID_1 -> [ #pnum NUM ] ; #define_arr
 type-specifier -> int
 type-specifier -> void
 params -> int Ftype-specifier_1 param-list_1
