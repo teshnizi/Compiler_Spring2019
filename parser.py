@@ -19,6 +19,8 @@ class Parser:
         self.input_buffer_stack = []
         self.semantic_input = 0
         self.waiting_for_id = False
+        self.waiting_for_id_define = False
+        self.waiting_for_num = False
 
     def make_table(self, rules, first_sets, follow_sets):
         table = dict()
@@ -91,15 +93,26 @@ class Parser:
         if (self.input in self.first_sets[nt]) or \
                 ('ε' in self.first_sets[nt] and self.input in self.follow_sets[nt]):
             backup = self.input
-            print(nt, backup)
+
             for index in range(len(self.table[(nt, backup)])):
                 table = self.table[(nt, backup)]
                 next_state = table[index]
 
                 if next_state[0] == '#':
-                    pass
+                    '''
+                    Certain functions (like functions with non-void arguments)
+                    should be called individually, for others use getattr.
+                    '''
+                    # print(next_state)
                     if next_state == "#pid":
-                        self.waiting_for_id = True
+                        self.waiting_for_id = True # pid routine will be executed after reading variable name
+                    elif next_state == "#pid_define":
+                        self.waiting_for_id_define = True
+                    elif next_state == "#pnum":
+                        self.waiting_for_num = True # pnum routine will be executed after reading the number
+                    else:
+                        func = getattr(self.semantic_intermediate_code, next_state[1:])
+                        func()
 
                 elif next_state in self.terminals:
                     if nt == 'program':
@@ -107,12 +120,18 @@ class Parser:
                             self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input\n")
                     if self.input is None:
                        self.get_and_split_token()
-
                     if next_state == self.input:
+
 
                         if self.waiting_for_id:
                             self.waiting_for_id = False
                             self.semantic_intermediate_code.pid(self.semantic_input)
+                        elif self.waiting_for_id_define:
+                            self.waiting_for_id_define = False
+                            self.semantic_intermediate_code.pid_define(self.semantic_input)
+                        elif self.waiting_for_num:
+                            self.waiting_for_num = False
+                            self.semantic_intermediate_code.pnum(self.semantic_input)
 
                         self.input = None
                     else:

@@ -25,14 +25,13 @@ class SemanticIntermediateCode:
 
     def pid(self, id):
         self.SS.append(id)
-        print("#pid is called!", id)
-        # pass  # TODO: find address of following ID in the rule and push it into the stack
 
     def pint(self):
         '''
         push 'int' inside the SS
         '''
         self.SS.append('int')
+
 
     def pvoid(self):
         self.SS.append('void')
@@ -52,7 +51,7 @@ class SemanticIntermediateCode:
         :param num: string
         :return:
         '''
-        self.SS.append('#' + num)
+        self.SS.append(num)
 
     def plt(self):
         self.SS.append('<')
@@ -82,14 +81,26 @@ class SemanticIntermediateCode:
         self.line += 1
 
     def assign(self):
-        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], self.SS[-2])
-        self.SS = self.SS[-2]
+        '''
+        generates an assignment command, pops corresponding values and pushes the assigned variable to the stack
+        '''
+        var = self.get_var(self.SS[-3])
+        address, size = var[0], var[1]
+        index = int(self.SS[-2])
+        if index * 4 >= size:
+            print("Array index out of bound! : {} >= {} ".format(index, int(size/4)) )
+            return
+        address = address + 4 * index
+        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], address)
+        var = self.SS[-2]
+        self.SS = self.SS[:-2]
+        self.SS.append(var)
         self.line += 1
 
     def addopp_routine(self):
-        t = None  # TODO: get an address for t
+        t = self.get_temp()  # TODO: get an address for t
         operand1, operand2, addop = self.SS[-3], self.SS[-2], self.SS[-1]
-        self.PB[self.line] = '({},{},{})'.format(addop, operand1, operand2, t)
+        self.PB[self.line] = '({},{},{},{})'.format(addop, operand1, operand2, t)
         self.SS = self.SS[:-3]
         self.SS.append(t)
         self.line += 1
@@ -137,39 +148,45 @@ class SemanticIntermediateCode:
         self.PB[self.SS[-1]] = '(jpf,{},{},)'.format(self.SS[-2], self.line + 1)
         self.PB[self.line] = '(jp,{},,)'.format(self.SS[-3])
         self.line += 1
-        self.SS = self.SS[-3]
+        self.SS = self.SS[:-3]
 
     def continue_routine(self):
         pass
 
-    def define_var(self):
-        var_name, var_type = self.SS[-1], self.SS[-2]
-        if var_type == 'void':
-            print('Illegal type of void.')
-        else:
-            self.variables[var_name] = (self.variables_SP, 4)
-            self.variables_SP += 4
+    # def define_var(self):
+    #     var_name, var_type = self.SS[-1], self.SS[-2]
+    #     if var_type == 'void':
+    #         print('Illegal type of void.')
+    #     else:
+    #         self.variables[var_name] = (self.variables_SP, 4)
+    #         self.variables_SP += 4
+    #
+    #     self.SS = self.SS[:-2]
 
-        self.SS = self.SS[-2]
+    def push0(self):
+        self.SS.append(0)
+    def push1(self):
+        self.SS.append(1)
 
     def check_main(self):
         func_type, func_name = self.SS[-2], self.SS[-1]
         if func_type == 'void' and func_name == 'main':
             self.main_defined_flag = True
 
-    def define_arr(self):
-        arr_size, arr_name, arr_type = self.SS[-1], self.SS[-2], self.SS[-3]
-        if arr_type == 'void':
+    def define_var(self):
+        var_size, var_name, var_type = int(self.SS[-1]), self.SS[-2], self.SS[-3]
+        if var_type == 'void':
             print('Illegal type of void.')
         else:
-            self.variables[arr_name] = (self.variables_SP, 4 * arr_size)
-            self.variables_SP += 4 * arr_size
+            self.variables[var_name] = (self.variables_SP, 4 * var_size)
+            self.variables_SP += 4 * var_size
 
-        self.SS = self.SS[-3]
+        self.SS = self.SS[:-3]
 
     def main_defined_routine(self):
         if not self.main_defined_flag:
             print('main function not found!')
+
 
     def return_routine(self):
         pass  # TODO: perhaps a jump to the next line of calling the callee from caller! address is on top of stack?

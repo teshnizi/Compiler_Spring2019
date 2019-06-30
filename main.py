@@ -48,3 +48,7 @@ if __name__ == '__main__':
                         non_terminals=non_terminals, terminals=terminals, tree_file=tree_file, syntax_errors_file=syntax_errors_file)
 
         parser.parse('program', 0)
+
+        print(parser.semantic_intermediate_code.PB)
+
+

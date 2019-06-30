@@ -1,4 +1,4 @@
-program -> declaration-list EOF
+program -> declaration-list EOF #main_defined_routine
 declaration-list -> declaration-list_1
 declaration-list_1 -> declaration declaration-list_1
 declaration-list_1 -> ε
@@ -10,18 +10,18 @@ FID_5 -> ( params ) compound-stmt
 Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
 FID_6 -> #check_main ( params ) compound-stmt
-FID_1 -> ; #define_var
-FID_1 -> [ #pnum NUM ] ; #define_arr
-type-specifier -> int
-type-specifier -> void
-params -> int Ftype-specifier_1 param-list_1
-params -> void Fvoid_1
+FID_1 -> #push1 ; #define_var
+FID_1 -> [ #pnum NUM ] ; #define_var
+type-specifier -> int #pint
+type-specifier -> void #pvoid
+params -> int #pint Ftype-specifier_1 param-list_1
+params -> void #pvoid Fvoid_1
 Fvoid_1 -> Ftype-specifier_1 param-list_1
 Fvoid_1 -> ε
 param-list_1 -> , param param-list_1
 param-list_1 -> ε
 param -> type-specifier Ftype-specifier_1
-Ftype-specifier_1 -> ID FID_2
+Ftype-specifier_1 -> #pid ID FID_2
 FID_2 -> ε
 FID_2 -> [ ]
 compound-stmt -> { declaration-list statement-list }
@@ -34,15 +34,15 @@ statement -> selection-stmt
 statement -> iteration-stmt
 statement -> return-stmt
 statement -> switch-stmt
-expression-stmt -> expression ;
-expression-stmt -> continue ;
+expression-stmt -> expression ; #pop_expression
+expression-stmt -> continue ; #continue_routine
 expression-stmt -> break ;
 expression-stmt -> ;
-selection-stmt -> if  ( expression ) statement else statement
-iteration-stmt -> while  ( expression ) statement
+selection-stmt -> if  ( expression ) #save statement else #jpf_save statement #jp
+iteration-stmt -> while #label ( expression ) #save statement #while_routine
 return-stmt -> return Freturn
-Freturn -> ;
-Freturn -> expression ;
+Freturn -> ; #return_routine1
+Freturn -> expression ; #return_routine2
 switch-stmt -> switch  ( expression ) { case-stmts default-stmt }
 case-stmts -> case-stmts_1
 case-stmts_1 -> case-stmt case-stmts_1
@@ -50,43 +50,43 @@ case-stmts_1 -> ε
 case-stmt -> case NUM : statement-list
 default-stmt -> default : statement-list
 default-stmt -> ε
-expression -> ID FID_3
+expression -> #pid ID FID_3
 expression -> ( expression ) term_1 additive-expression_1 Fadditive-expression
-expression -> NUM term_1 additive-expression_1 Fadditive-expression
+expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
 expression -> + factor term_1 additive-expression_1 Fadditive-expression
-expression -> - factor term_1 additive-expression_1 Fadditive-expression
+expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
 FID_3 -> FID FFID
 FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression
-FFID -> = F=
-FFID -> * single-factor term_1 additive-expression_1 Fadditive-expression
-FFID -> addop term additive-expression_1 Fadditive-expression
-FFID -> < additive-expression
-FFID -> == additive-expression
+FFID -> = F= #assign
+FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression
+FFID -> addop term #addop_routine additive-expression_1 Fadditive-expression
+FFID -> < additive-expression #lt
+FFID -> == additive-expression #eq
 FFID -> ε
 F= -> expression
 F= -> = additive-expression
-FID -> ε
+FID -> #push0 ε
 FID -> [ expression ]
-Fadditive-expression -> RELOP additive-expression
+Fadditive-expression -> RELOP additive-expression #relop_routine
 Fadditive-expression -> ε
-RELOP -> <
-RELOP -> ==
+RELOP -> < #plt
+RELOP -> == #peq
 additive-expression -> term additive-expression_1
-additive-expression_1 -> addop term additive-expression_1
+additive-expression_1 -> addop term #addop_routine additive-expression_1
 additive-expression_1 -> ε
-addop -> +
-addop -> -
+addop -> + #padd
+addop -> - #psub
 term -> single-factor term_1
-term_1 -> * single-factor term_1
+term_1 -> * single-factor #mult term_1
 term_1 -> ε
 single-factor -> factor
 single-factor -> + factor
-single-factor -> - factor
+single-factor -> - factor #neg
 factor ->  ( expression )
-factor -> ID FID_4
-factor -> NUM
+factor -> #pid ID FID_4
+factor -> #pnum NUM
 FID_4 -> FID
-FID_4 -> ( args )
+FID_4 -> #pfunction ( args )
 args -> arg-list
 args -> ε
 arg-list -> expression arg-list_1
