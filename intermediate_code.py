@@ -84,20 +84,21 @@ class SemanticIntermediateCode:
         '''
         generates an assignment command, pops corresponding values and pushes the assigned variable to the stack
         '''
-        var = self.get_var(self.SS[-3])
-        address, size = var[0], var[1]
-        index = self.SS[-2]
+        # var = self.get_var(self.SS[-3])
+        # address, size = var[0], var[1]
+        # index = self.SS[-2]
+        # print(self.SS)
+        # t = self.get_temp()
+        # self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
+        # self.line += 1
+        # self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
+        # self.line += 1
+        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], self.SS[-2])
+        self.line += 1
 
-        t = self.get_temp()
-        self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
-        self.line += 1
-        self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
-        self.line += 1
-        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], t)
         var = self.SS[-2]
         self.SS = self.SS[:-2]
-        self.SS.append(var)
-        self.line += 1
+        # print(self.SS)
 
     def addop_routine(self):
         t = self.get_temp()
@@ -129,6 +130,19 @@ class SemanticIntermediateCode:
         '''
         self.SS.pop()
 
+    def calculate_indexed_value(self):
+        var = self.get_var(self.SS[-2])
+        address, size = var[0], var[1]
+        index = self.SS[-1]
+        # print(self.SS)
+        t = self.get_temp()
+        self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
+        self.line += 1
+        self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
+        self.line += 1
+        self.SS = self.SS[:-2]
+        self.SS.append(t)
+
     def label(self):
         self.SS.append(self.line)
 
@@ -157,6 +171,7 @@ class SemanticIntermediateCode:
 
     def push0(self):
         self.SS.append('#0')
+
     def push1(self):
         self.SS.append('#1')
 
