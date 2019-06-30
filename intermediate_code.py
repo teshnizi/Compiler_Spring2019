@@ -67,14 +67,14 @@ class SemanticIntermediateCode:
         self.line += 1
 
     def add(self):
-        t = None
+        t = self.get_temp()
         self.PB[self.line] = '(ADD,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
         self.line += 1
 
     def lt(self):
-        t = None
+        t = self.get_temp()
         self.PB[self.line] = ('<', self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
