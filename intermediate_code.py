@@ -51,7 +51,7 @@ class SemanticIntermediateCode:
         :param num: string
         :return:
         '''
-        self.SS.append(num)
+        self.SS.append('#' + num)
 
     def plt(self):
         self.SS.append('<')
@@ -60,7 +60,7 @@ class SemanticIntermediateCode:
         self.SS.append('function')
 
     def mult(self):
-        t = None
+        t = self.get_temp()
         self.PB[self.line] = '(MULT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
@@ -86,28 +86,30 @@ class SemanticIntermediateCode:
         '''
         var = self.get_var(self.SS[-3])
         address, size = var[0], var[1]
-        index = int(self.SS[-2])
-        if index * 4 >= size:
-            print("Array index out of bound! : {} >= {} ".format(index, int(size/4)) )
-            return
-        address = address + 4 * index
-        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], address)
+        index = self.SS[-2]
+
+        t = self.get_temp()
+        self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
+        self.line += 1
+        self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
+        self.line += 1
+        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], t)
         var = self.SS[-2]
         self.SS = self.SS[:-2]
         self.SS.append(var)
         self.line += 1
 
-    def addopp_routine(self):
-        t = self.get_temp()  # TODO: get an address for t
-        operand1, operand2, addop = self.SS[-3], self.SS[-2], self.SS[-1]
+    def addop_routine(self):
+        t = self.get_temp()
+        operand1, addop, operand2= self.SS[-3], self.SS[-2], self.SS[-1]
         self.PB[self.line] = '({},{},{},{})'.format(addop, operand1, operand2, t)
         self.SS = self.SS[:-3]
         self.SS.append(t)
         self.line += 1
 
     def neg(self):
-        t = None  # TODO: get an address for t
-        self.PB[self.line] = '(SUB,#0,{}, t)'.format(self.SS[-1])
+        t = self.get_temp()
+        self.PB[self.line] = '(SUB,#0,{},{})'.format(self.SS[-1], t)
         self.SS.pop()
         self.SS.append(t)
         self.line += 1
@@ -153,20 +155,10 @@ class SemanticIntermediateCode:
     def continue_routine(self):
         pass
 
-    # def define_var(self):
-    #     var_name, var_type = self.SS[-1], self.SS[-2]
-    #     if var_type == 'void':
-    #         print('Illegal type of void.')
-    #     else:
-    #         self.variables[var_name] = (self.variables_SP, 4)
-    #         self.variables_SP += 4
-    #
-    #     self.SS = self.SS[:-2]
-
     def push0(self):
-        self.SS.append(0)
+        self.SS.append('#0')
     def push1(self):
-        self.SS.append(1)
+        self.SS.append('#1')
 
     def check_main(self):
         func_type, func_name = self.SS[-2], self.SS[-1]
@@ -174,7 +166,7 @@ class SemanticIntermediateCode:
             self.main_defined_flag = True
 
     def define_var(self):
-        var_size, var_name, var_type = int(self.SS[-1]), self.SS[-2], self.SS[-3]
+        var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
         if var_type == 'void':
             print('Illegal type of void.')
         else:

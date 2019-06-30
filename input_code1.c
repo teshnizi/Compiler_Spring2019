@@ -1,10 +1,7 @@
 
-int a[6];
-int c;
-int bar[19];
+int a[13];
 
 void main(void){
-    a[4] = 17;
-    bar[22] = 9;
+    a[3 * 4] = -9 + (8 + 2 * 3 + 2)
 }
 

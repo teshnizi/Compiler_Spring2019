@@ -10,8 +10,8 @@ FID_5 -> ( params ) compound-stmt  TODO: We have to save the params and their ty
 Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
 FID_6 -> #check_main ( params ) compound-stmt TODO: We have to save the params and their types in a table for each function
-FID_1 -> ; #define_var
-FID_1 -> [ #pnum NUM ] ; #define_arr
+FID_1 -> #push1 ; #define_var
+FID_1 -> [ #pnum NUM ] ; #define_var
 type-specifier -> int #pint
 type-specifier -> void #pvoid
 params -> int #pint Ftype-specifier_1 param-list_1
@@ -65,7 +65,7 @@ FFID -> == additive-expression #eq
 FFID -> ε
 F= -> expression
 F= -> = additive-expression  TODO: Safely Omit this rule!!!!!!
-FID -> ε
+FID -> #push0 ε
 FID -> [ expression ]  TODO: a routine to find the espression-th element of the array
 Fadditive-expression -> RELOP additive-expression #relop_routine
 Fadditive-expression -> ε
