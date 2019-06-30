@@ -55,7 +55,7 @@ expression -> ( expression ) term_1 additive-expression_1 Fadditive-expression
 expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
 expression -> + factor term_1 additive-expression_1 Fadditive-expression
 expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
-FID_3 -> FID FFID
+FID_3 -> FID #calculate_indexed_value FFID
 FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression  TODO: A jump here to the beginnig of the callee??
 FFID -> = F= #assign
 FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression

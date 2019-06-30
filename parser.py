@@ -19,7 +19,6 @@ class Parser:
         self.input_buffer_stack = []
         self.semantic_input = 0
         self.waiting_for_id = False
-        self.waiting_for_id_define = False
         self.waiting_for_num = False
 
     def make_table(self, rules, first_sets, follow_sets):
@@ -107,8 +106,6 @@ class Parser:
                     # print(next_state)
                     if next_state == "#pid":
                         self.waiting_for_id = True # pid routine will be executed after reading variable name
-                    elif next_state == "#pid_define":
-                        self.waiting_for_id_define = True
                     elif next_state == "#pnum":
                         self.waiting_for_num = True # pnum routine will be executed after reading the number
                     else:
@@ -127,9 +124,6 @@ class Parser:
                         if self.waiting_for_id:
                             self.waiting_for_id = False
                             self.semantic_intermediate_code.pid(self.semantic_input)
-                        elif self.waiting_for_id_define:
-                            self.waiting_for_id_define = False
-                            self.semantic_intermediate_code.pid_define(self.semantic_input)
                         elif self.waiting_for_num:
                             self.waiting_for_num = False
                             self.semantic_intermediate_code.pnum(self.semantic_input)

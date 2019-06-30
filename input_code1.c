@@ -1,9 +1,23 @@
+int b;
+void main(void) {
+	int c;
+    int a[17];
 
-int a[4];
-int b[4];
+    a[ 7 + b ] = c * 2 - b;
 
-void main(void){
-    b[2] = 5;
-    a[b[2]] = 17 + 9 - (3 * -2);
-    b[0] = 6;
+	if (b < 0) {
+		if ( c < 0 ){
+		    b = 2 * c;
+		} else {
+		    while ( 0 < c ){
+                c = c - 1;
+                c + 1;
+            }
+		}
+		c = b + 3;
+	} else c = 2 * b + 1;
+
+
+
 }
+
