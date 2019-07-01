@@ -35,14 +35,14 @@ statement -> iteration-stmt
 statement -> return-stmt
 statement -> switch-stmt
 expression-stmt -> expression ; #pop_expression
-expression-stmt -> continue ; #continue_routine
-expression-stmt -> break ;  TODO: not sure about the appropriate routine here!
+expression-stmt -> continue ; #continue_routine  TODO: continue routine
+expression-stmt -> break ;  TODO: break routine
 expression-stmt -> ;
 selection-stmt -> if  ( expression ) #save statement else #jpf_save statement #jp
 iteration-stmt -> while #label ( expression ) #save statement #while_routine
 return-stmt -> return Freturn
 Freturn -> ; #return_routine1
-Freturn -> expression ; #return_routine2 TODO: returning to the caller may be different for this rule and the above rule. value of expression is on top of stack here but not in above!!
+Freturn -> expression ; #return_routine2
 switch-stmt -> switch  ( expression ) { case-stmts default-stmt }  TODO: routine for switch-case
 case-stmts -> case-stmts_1  TODO: routine for switch-case
 case-stmts_1 -> case-stmt case-stmts_1   TODO: routine for switch-case
@@ -56,7 +56,7 @@ expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
 expression -> + factor term_1 additive-expression_1 Fadditive-expression
 expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
 FID_3 -> FID #calculate_indexed_value FFID
-FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression  TODO: A jump here to the beginnig of the callee??
+FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression
 FFID -> = F= #assign
 FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression
 FFID -> addop term #addop_routine additive-expression_1 Fadditive-expression
@@ -66,7 +66,7 @@ FFID -> ε
 F= -> expression
 F= -> = additive-expression  TODO: Safely Omit this rule!!!!!!
 FID -> #push0 ε
-FID -> [ expression ]  TODO: a routine to find the espression-th element of the array
+FID -> [ expression ]
 Fadditive-expression -> RELOP additive-expression #relop_routine
 Fadditive-expression -> ε
 RELOP -> < #plt
@@ -86,7 +86,7 @@ factor ->  ( expression )
 factor -> #pid ID FID_4
 factor -> #pnum NUM
 FID_4 -> FID
-FID_4 -> #pfunction ( args )  TODO: A jump here to the beginnig of the callee??
+FID_4 -> ( args ) #call_func
 args -> arg-list
 args -> ε
 arg-list -> expression arg-list_1

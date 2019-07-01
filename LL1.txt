@@ -6,7 +6,7 @@ declaration -> int #pint Fint
 declaration -> void #pvoid Fvoid
 Fint -> #pid ID FID_5
 FID_5 -> FID_1
-FID_5 -> #start_func_scope ( params ) compound-stmt #end_func_scope
+FID_5 -> #start_func_scope ( params ) #check_main compound-stmt #end_func_scope
 Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
 FID_6 -> #start_func_scope ( params ) #check_main compound-stmt #end_func_scope
@@ -21,9 +21,9 @@ Fvoid_1 -> ε
 param-list_1 -> , param param-list_1
 param-list_1 -> ε
 param -> type-specifier Ftype-specifier_1
-Ftype-specifier_1 -> #pid ID FID_2
-FID_2 -> ε #define_param
-FID_2 -> [ ] #define_arr_param
+Ftype-specifier_1 -> #pid ID FID_2 #define_param
+FID_2 -> ε
+FID_2 -> [ ]
 compound-stmt -> { declaration-list statement-list }
 statement-list -> statement-list_1
 statement-list_1 -> statement statement-list_1
@@ -56,7 +56,7 @@ expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
 expression -> + factor term_1 additive-expression_1 Fadditive-expression
 expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
 FID_3 -> FID FFID
-FID_3 -> ( args ) term_1 additive-expression_1 Fadditive-expression
+FID_3 -> ( args ) #call_func term_1 additive-expression_1 Fadditive-expression
 FFID -> = F= #assign
 FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression
 FFID -> addop term #addop_routine additive-expression_1 Fadditive-expression
@@ -86,9 +86,9 @@ factor ->  ( expression )
 factor -> #pid ID FID_4
 factor -> #pnum NUM
 FID_4 -> FID
-FID_4 -> #pfunction ( args ) #call_funnction
+FID_4 -> ( args ) #call_funnction
 args -> arg-list
-args -> ε
-arg-list -> expression arg-list_1
-arg-list_1 -> , expression arg-list_1
+args -> ε #push0
+arg-list -> expression #add_arg arg-list_1
+arg-list_1 -> , expression #add_arg arg-list_1
 arg-list_1 -> ε
