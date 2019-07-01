@@ -28,7 +28,7 @@ class SemanticIntermediateCode:
         self.temporary_SP = 500
         self.variables_SP = 1000
         self.symbol_table = list()
-        self.scope_stack = list()
+        self.scope_stack = [0]
 
     def get_temp(self):
         self.temporary_SP += 4
@@ -41,6 +41,7 @@ class SemanticIntermediateCode:
         :param lexeme: str
         :return: corresponding entry of lexeme in symbol table which is an instance of SymbolTableEntry
         '''
+
         scope_end = len(self.symbol_table)  # last index of symbol table
         for scope_start in reversed(self.scope_stack):
             for entry in self.symbol_table[scope_start:scope_end]:
@@ -56,15 +57,23 @@ class SemanticIntermediateCode:
         :return:
         '''
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(['if',])
+        self.symbol_table.append(SymbolTableEntry(lexeme='if'))
 
     def end_if_scope(self):
         if_scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:if_scope_start]
 
+    def start_else_scope(self):
+        self.scope_stack.append(len(self.symbol_table))
+        self.symbol_table.append(SymbolTableEntry(lexeme='else'))
+
+    def end_else_scope(self):
+        else_scope_start = self.scope_stack.pop()
+        self.symbol_table = self.symbol_table[:else_scope_start]
+
     def start_while_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(['while',])
+        self.symbol_table.appendSymbolTableEntry(lexeme='while')
 
     def end_while_scope(self):
         while_scope_start = self.scope_stack.pop()
@@ -72,18 +81,24 @@ class SemanticIntermediateCode:
 
     def start_switch_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(['switch',])
+        self.symbol_table.append(SymbolTableEntry(lexeme='switch'))
 
     def end_switch_scope(self):
         switch_scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:switch_scope_start]
+
+    def print_symbol_table(self):
+        print("Symbol table:")
+        for entry in self.symbol_table:
+            print(entry.lexeme)
+        print("=============")
 
     def check_break_scope(self):
         '''
         Checks out the latest scope; If it's not while or switch, prints out an error
         :return:
         '''
-        entry = self.symbol_table[self.scope_stack[-1]]
+        entry = self.symbol_table[self.scope_stack[-1]] #TODO check inner entries
 
         if entry[0] != 'switch' and entry[0] != 'while':
             print('No \'while\' or \'switch\' found for \'break\'.')
@@ -103,6 +118,10 @@ class SemanticIntermediateCode:
         self.scope_stack.append(len(self.symbol_table))
         func_return_type, func_name = self.SS[-2], self.SS[-1]
         self.symbol_table.append(SymbolTableEntry(lexeme=func_name, type=func_return_type, PB_line=self.line))
+
+    def end_func_scope(self):
+        scope_start = self.scope_stack.pop()
+        self.symbol_table = self.symbol_table[:scope_start]
 
     def pid(self, id):
         self.SS.append(id)
@@ -155,7 +174,7 @@ class SemanticIntermediateCode:
 
     def lt(self):
         t = self.get_temp()
-        self.PB[self.line] = ('<', self.SS[-2], self.SS[-1], t)
+        self.PB[self.line] = '(<,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
         # print(self.SS)
@@ -206,22 +225,31 @@ class SemanticIntermediateCode:
 
     def calculate_indexed_var(self):
         '''
-        pops two a variable and an index from the stack and pushes the corresponding address to the stack;
+        pops a variable and an index from the stack and pushes the corresponding address to the stack;
         '''
-        address, size = self.get_symbol(self.SS[-2])
-        index = self.SS[-1]
+        # print(self.SS)
 
+        var = self.get_symbol(self.SS[-2])
+        if var == None:
+            self.SS = self.SS[:-2]
+            self.SS.append("NONE")
+            #TODO Undifined Var Found!
+            return
+        address = var.addr
+        size = var.size
+        index = self.SS[-1]
+        # print(address, size, index)
         t = self.get_temp()
         if index != '#0':
             self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
             self.line += 1
-            self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
+            self.PB[self.line] = '(ADD,{},#{},{})'.format(t, address, t)
             self.line += 1
             self.SS = self.SS[:-2]
-            self.SS.append('@'.format(t))
+            self.SS.append('@{}'.format(t))
         else:
             self.SS = self.SS[:-2]
-            self.SS.append(address)
+            self.SS.append('{}'.format(address))
 
     def label(self):
         self.SS.append(self.line)
@@ -268,6 +296,7 @@ class SemanticIntermediateCode:
         else:
             self.SS = self.SS[:-2]
 
+
     def define_var(self):
         var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
         if var_type == 'void':
@@ -309,7 +338,7 @@ class SemanticIntermediateCode:
     def add_arg(self):
         new_arg = self.SS[-1]
         n_args, func_name = int(self.SS[-2][1:]), self.SS[-3]
-        self.SS = self.SS[-3]
+        self.SS = self.SS[:-3]
         self.SS.append(new_arg)
         self.SS.append(func_name)
         self.SS.append('#{}'.format(n_args + 1))
