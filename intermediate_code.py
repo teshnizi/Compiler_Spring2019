@@ -96,22 +96,45 @@ class SemanticIntermediateCode:
         while_scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:while_scope_start]
 
+    def jp_switch(self):
+        self.PB[self.line] = '(JP,{},,)'.format(self.line + 2)
+        self.SS.append(self.line + 1)
+        self.line += 2
+
     def start_switch_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(SymbolTableEntry(lexeme='switch'))
+        self.symbol_table.append(SymbolTableEntry(lexeme='switch', PB_line=self.SS[-2] + 1))
+
+    def cmp_save(self):
+        operand1, operand2 = self.SS[-1], self.SS[-2]
+        t = self.get_temp()
+        self.PB[self.line] = '(EQ,{},{},{})'.format(operand1, operand2, t)
+        self.line += 1
+        self.SS = self.SS[:-1]
+        self.SS.append(t)
+        self.SS.append(self.line)
+        self.line += 1
+
+    def jpf_switch(self):
+        self.PB[self.SS[-1]] = '(JPF,{},{},)'.format(self.SS[-2], self.line)
+        self.SS = self.SS[:-2]
 
     def end_switch_scope(self):
+        self.PB[self.SS[-2]] = '(JP,{},,)'.format(self.line)
         switch_scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:switch_scope_start]
+        self.SS = self.SS[:-2]
 
     def break_routine(self):
         print(self.SS)
         entry = None
+        flag = False
         scope_end = len(self.symbol_table)  # last index of symbol table
         for scope_start in reversed(self.scope_stack):
             for element in self.symbol_table[scope_start:scope_end]:
-                if element.lexeme == 'while' or element.lexeme == 'switch':
+                if element.lexeme == 'while' or element.lexeme == 'switch' and not flag:
                     entry = element
+                    flag = True
             scope_end = scope_start
 
         if entry is not None:
@@ -386,7 +409,10 @@ class SemanticIntermediateCode:
         func_name, n_args = self.SS[-2], int(self.SS[-1][1:])
         func_entry = self.get_symbol(func_name)
         self.SS = self.SS[:-2]
-        if func_entry.n_params != n_args:
+        if func_entry is None:
+            print('{} is not defined.'.format(func_name))
+            self.SS.append(None)
+        elif func_entry.n_params != n_args:
             print('Mismatch in numbers of arguments of {}.'.format(func_name))
         else:
             for param_addr in reversed(func_entry.params_addr):

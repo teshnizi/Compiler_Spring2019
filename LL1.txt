@@ -47,8 +47,8 @@ switch-stmt -> #jp_switch switch ( expression ) { #start_switch_scope case-stmts
 case-stmts -> case-stmts_1
 case-stmts_1 -> case-stmt case-stmts_1
 case-stmts_1 -> ε
-case-stmt -> case #pnum NUM #cmp_save_jpf : statement-list
-default-stmt -> default #jpf : statement-list
+case-stmt -> case #pnum NUM #cmp_save : statement-list #jpf_switch
+default-stmt -> default : statement-list
 default-stmt -> ε
 expression -> #pid ID FID_3
 expression -> ( expression ) term_1 additive-expression_1 Fadditive-expression
