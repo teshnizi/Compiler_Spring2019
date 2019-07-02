@@ -126,7 +126,7 @@ class SemanticIntermediateCode:
         self.SS = self.SS[:-2]
 
     def break_routine(self):
-        print(self.SS)
+        # print(self.SS)
         entry = None
         flag = False
         scope_end = len(self.symbol_table)  # last index of symbol table
@@ -180,7 +180,7 @@ class SemanticIntermediateCode:
         scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:scope_start + 1]
         self.SS.pop()
-        print(self.SS)
+        # print(self.SS)
 
     def push_break_symbol(self):
         self.symbol_table.append(SymbolTableEntry(lexeme='break', PB_line=self.line))
@@ -214,7 +214,7 @@ class SemanticIntermediateCode:
         :return:
         '''
         self.SS.append('#' + num)
-        print(self.SS)
+        # print(self.SS)
 
     def plt(self):
         self.SS.append('<')
@@ -248,6 +248,8 @@ class SemanticIntermediateCode:
         '''
         generates an assignment command, pops corresponding values and pushes the assigned variable to the stack
         '''
+        if self.SS[-1] == None or self.SS[-2] == None:
+            print("Type mismatch in operands.")
         self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], self.SS[-2])
         self.line += 1
         # print(self.SS)
@@ -256,6 +258,8 @@ class SemanticIntermediateCode:
     def addop_routine(self):
         t = self.get_temp()
         operand1, addop, operand2= self.SS[-3], self.SS[-2], self.SS[-1]
+        if operand1 == None or operand2 == None:
+            print("Type mismatch in operands.")
         self.PB[self.line] = '({},{},{},{})'.format(addop, operand1, operand2, t)
         self.SS = self.SS[:-3]
         self.SS.append(t)
@@ -263,6 +267,8 @@ class SemanticIntermediateCode:
 
     def neg(self):
         t = self.get_temp()
+        if self.SS[-1] == None:
+            print("Type mismatch in operands.")
         self.PB[self.line] = '(SUB,#0,{},{})'.format(self.SS[-1], t)
         self.SS.pop()
         self.SS.append(t)
@@ -353,7 +359,7 @@ class SemanticIntermediateCode:
 
     def push0(self):
         self.SS.append('#0')
-        print(self.SS)
+        # print(self.SS)
 
     def push1(self):
         self.SS.append('#1')
@@ -373,10 +379,10 @@ class SemanticIntermediateCode:
 
         if func.type == 'int':
             func.return_value = self.get_temp()
-        print(self.SS)
+        # print(self.SS)
 
     def define_var(self):
-        print(self.SS)
+        # print(self.SS)
         var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
         if var_type == 'void':
             print('Illegal type of void.')
@@ -398,14 +404,14 @@ class SemanticIntermediateCode:
         # print(func_entry.n_params)
         self.variables_SP += 4
         self.SS = self.SS[:-2]
-        print(self.SS)
+        # print(self.SS)
 
     def main_defined_routine(self):
         if not self.main_defined_flag:
             print('main function not found!')
 
     def call_func(self):
-        print(self.SS)
+        # print(self.SS)
         func_name, n_args = self.SS[-2], int(self.SS[-1][1:])
         func_entry = self.get_symbol(func_name)
         self.SS = self.SS[:-2]
@@ -429,10 +435,10 @@ class SemanticIntermediateCode:
             self.PB[self.line] = '(JP,{},,)'.format(func_entry.PB_line)  # jump to the beginning of function
             self.line += 1
 
-        print(self.SS)
+        # print(self.SS)
 
     def add_arg(self):
-        print(self.SS)
+        # print(self.SS)
         new_arg = self.SS[-1]
         func = self.get_symbol(self.SS[-3])
 
@@ -452,7 +458,7 @@ class SemanticIntermediateCode:
 
     def return_routine_int(self):
         func = self.get_symbol(self.SS[-2])
-        print(self.SS, func.lexeme, func.addr, func.n_params, func.PB_line, func.type)
+        # print(self.SS, func.lexeme, func.addr, func.n_params, func.PB_line, func.type)
         expression = self.SS[-1]
         self.PB[self.line] = '(ASSIGN,{},{},)'.format(expression, func.return_value)
         self.line += 1
@@ -462,4 +468,4 @@ class SemanticIntermediateCode:
 
     def has_params(self):
         self.SS.append('not_void')
-        print(self.SS)
+        # print(self.SS)
