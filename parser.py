@@ -79,7 +79,7 @@ class Parser:
             self.get_and_split_token()
 
 
-        print("NONT:     " + nt + "  " + self.input)
+        # print("NONT:     " + nt + "  " + self.input)
 
         if self.input is "EOF":
             if 'ε' in self.first_sets[nt]:
@@ -90,7 +90,6 @@ class Parser:
 
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
             self.get_and_split_token()
-            print("lost: " + self.input + " " + nt)
             if self.input == 'EOF':
                 return
 

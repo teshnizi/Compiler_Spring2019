@@ -6,15 +6,15 @@ declaration -> int #pint Fint
 declaration -> void #pvoid Fvoid
 Fint -> #pid ID FID_5
 FID_5 -> FID_1
-FID_5 -> #start_func_scope ( params ) #check_main compound-stmt #end_func_scope
+FID_5 -> #start_func_scope ( params ) #set_signature compound-stmt #end_func_scope
 Fvoid -> #pid ID FID_6
 FID_6 -> FID_1
-FID_6 -> #start_func_scope ( params ) #check_main compound-stmt #end_func_scope
+FID_6 -> #start_func_scope ( params ) #set_signature compound-stmt #end_func_scope
 FID_1 -> #push1 ; #define_var
 FID_1 -> [ #pnum NUM ] ; #define_var
 type-specifier -> int #pint
 type-specifier -> void #pvoid
-params -> int #pint Ftype-specifier_1 param-list_1
+params -> int #pint Ftype-specifier_1 param-list_1 #has_params
 params -> void #pvoid Fvoid_1
 Fvoid_1 -> Ftype-specifier_1 param-list_1
 Fvoid_1 -> ε
@@ -41,8 +41,8 @@ expression-stmt -> ;
 selection-stmt -> if  ( expression ) #save #start_if_scope statement #end_if_scope else #jpf_save #start_else_scope statement #end_else_scope #jp
 iteration-stmt -> while #label ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
 return-stmt -> return Freturn
-Freturn -> #return_routine1 ;
-Freturn -> expression #return_routine2 ;
+Freturn -> #return_routine_void ;
+Freturn -> expression #return_routine_int ;
 switch-stmt -> switch  ( expression ) { #start_switch_scope case-stmts default-stmt #end_switch_scope }
 case-stmts -> case-stmts_1
 case-stmts_1 -> case-stmt case-stmts_1
@@ -56,7 +56,7 @@ expression -> #pnum NUM term_1 additive-expression_1 Fadditive-expression
 expression -> + factor term_1 additive-expression_1 Fadditive-expression
 expression -> - factor #neg term_1 additive-expression_1 Fadditive-expression
 FID_3 -> FID FFID
-FID_3 -> ( args ) #call_func term_1 additive-expression_1 Fadditive-expression
+FID_3 -> ( #push0 args ) #call_func term_1 additive-expression_1 Fadditive-expression
 FFID -> = F= #assign
 FFID -> * single-factor #mult term_1 additive-expression_1 Fadditive-expression
 FFID -> addop term #addop_routine additive-expression_1 Fadditive-expression
@@ -86,7 +86,7 @@ factor ->  ( expression )
 factor -> #pid ID FID_4
 factor -> #pnum NUM
 FID_4 -> FID
-FID_4 -> ( args ) #call_function
+FID_4 -> ( #push0 args ) #call_function
 args -> arg-list
 args -> ε #push0
 arg-list -> expression #add_arg arg-list_1

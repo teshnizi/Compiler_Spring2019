@@ -1,5 +1,15 @@
 class SymbolTableEntry():
-    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=None, PB_line=None):
+    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=None, PB_line=None, return_value=None):
+        '''
+
+        :param lexeme: name of variable or function
+        :param type: type of variable or function return value
+        :param size: size of variable, None for function
+        :param addr: address of variable or return address of function
+        :param n_params: parameters of function, None for variable
+        :param PB_line: starting point of function
+        :param return_value: return value of function, None for variable
+        '''
         self.lexeme = lexeme
         self.addr = addr
         self.n_params = n_params
@@ -8,6 +18,7 @@ class SymbolTableEntry():
         self.type=type
         self.params_addr = None
         self.PB_line = PB_line
+        self.return_value = return_value
 
     def add_param(self, addr):
         if self.n_params is None:
@@ -22,7 +33,7 @@ class SymbolTableEntry():
 class SemanticIntermediateCode:
     def __init__(self):
         self.SS = list()
-        self.line = 0
+        self.line = 1
         self.PB = dict()
         self.main_defined_flag = False
         self.temporary_SP = 500
@@ -41,7 +52,9 @@ class SemanticIntermediateCode:
         :param lexeme: str
         :return: corresponding entry of lexeme in symbol table which is an instance of SymbolTableEntry
         '''
-
+        # print(lexeme)
+        # print("----")
+        # self.print_symbol_table()
         scope_end = len(self.symbol_table)  # last index of symbol table
         for scope_start in reversed(self.scope_stack):
             for entry in self.symbol_table[scope_start:scope_end]:
@@ -118,17 +131,12 @@ class SemanticIntermediateCode:
         self.scope_stack.append(len(self.symbol_table))
         func_return_type, func_name = self.SS[-2], self.SS[-1]
         self.symbol_table.append(SymbolTableEntry(lexeme=func_name, type=func_return_type, PB_line=self.line))
-        self.SS.append(self.line)
-        self.line += 1
 
     def end_func_scope(self):
-        #TODO use return value at te top of the stack
-        # return_type = self.SS.pop()
+        # func = self.get_symbol(self.SS[-1])
         scope_start = self.scope_stack.pop()
-        self.print_symbol_table()
         self.symbol_table = self.symbol_table[:scope_start + 1]
-        print(self.symbol_table[-1].params_addr)
-        self.print_symbol_table()
+        self.SS.pop()
 
     def pid(self, id):
         self.SS.append(id)
@@ -296,16 +304,21 @@ class SemanticIntermediateCode:
     def push1(self):
         self.SS.append('#1')
 
-    def check_main(self):
-        if self.SS[-1] == 'void':
-            func_type, func_name = self.SS[-4], self.SS[-3]
-            if func_type == 'void' and func_name == 'main':
-                self.main_defined_flag = True
-            self.SS = self.SS[:-3]
-        else:
-            self.SS = self.SS[:-2]
+    def set_signature(self):
+        print(self.SS)
+        func = self.get_symbol(self.SS[-2])
+        func.type = self.SS[-3]
+        t = self.get_temp()
+        func.addr = t
+        self.SS = self.SS[:-3]
+        self.SS.append(func.lexeme)
 
+        if func.lexeme == 'main' and func.type == 'void' and func.n_params == None:
+            self.main_defined_flag = True
+            self.PB[0] = '(JP,{},,)'.format(self.line)
 
+        if func.type == 'int':
+            func.return_value = self.get_temp()
 
     def define_var(self):
         var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
@@ -318,14 +331,15 @@ class SemanticIntermediateCode:
         self.SS = self.SS[:-3]
 
     def define_param(self):
+        # print(self.SS)
         param_type, param_name = self.SS[-2], self.SS[-1]
         func_scope = self.scope_stack[-1]
         func_entry = self.symbol_table[func_scope]
-
         # adding the parameter to symbol table
-
         self.symbol_table.append(SymbolTableEntry(lexeme=param_name, type=param_type, addr=self.variables_SP, size=4))
+        # print(func_entry.n_params)
         func_entry.add_param(self.variables_SP)  # adds the address of parameter to the function entry inside symbol table
+        # print(func_entry.n_params)
         self.variables_SP += 4
         self.SS = self.SS[:-2]
 
@@ -341,30 +355,48 @@ class SemanticIntermediateCode:
         if func_entry.n_params != n_args:
             print('Mismatch in numbers of arguments of {}.'.format(func_name))
         else:
-            for param_addr in func_entry.params_addr:
+            for param_addr in reversed(func_entry.params_addr):
                 self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], param_addr)
                 self.line += 1
                 self.SS = self.SS[:-1]
-            self.PB[self.line] = '(JP,{},,)'.format(func_entry.addr)  # jump to the beginning of function
+            if func_entry.type != 'void':
+                self.SS.append(func_entry.return_value)
+
+            self.PB[self.line] = '(ASSIGN,#{},{},)'.format(self.line+2, func_entry.addr)
+            self.line += 1
+            self.PB[self.line] = '(JP,{},,)'.format(func_entry.PB_line)  # jump to the beginning of function
+            self.line += 1
+        print(self.SS)
 
     def add_arg(self):
+        print(self.SS)
         new_arg = self.SS[-1]
+        func = self.get_symbol(self.SS[-3])
+
         n_args, func_name = int(self.SS[-2][1:]), self.SS[-3]
         self.SS = self.SS[:-3]
         self.SS.append(new_arg)
         self.SS.append(func_name)
-        self.SS.append('#{}'.format(n_args + 1))
+        self.SS.append('#' + str(n_args + 1))
 
-    def return_routine1(self):
-        return_addr = self.SS[-1]
-        self.PB[self.line] = '(JP,{},,)'.format(return_addr)
+
+    def return_routine_void(self):
+        # print(self.SS)
+        func = self.get_symbol(self.SS[-1])
+        if func.type == 'int':
+            print("missing return value!");
+        self.PB[self.line] = '(JP,@{},,)'.format(func.addr)
+        self.line += 1
+
+    def return_routine_int(self):
+        func = self.get_symbol(self.SS[-2])
+        print(self.SS, func.lexeme, func.addr, func.n_params, func.PB_line, func.type)
+        expression = self.SS[-1]
+        self.PB[self.line] = '(ASSIGN,{},{},)'.format(expression, func.return_value)
+        self.line += 1
+        self.PB[self.line] = '(JP,@{},,)'.format(func.addr)
         self.line += 1
         self.SS = self.SS[:-1]
 
-    def return_routine2(self):
-        expression, return_addr = self.SS[-1], self.SS[-2]
-        self.PB[self.line] = '(JP,{},,)'.format(return_addr)
-        self.line += 1
-        self.SS = self.SS[:-2]
-        self.SS.append(expression)
-
+    def has_params(self):
+        self.SS.append('not_void')

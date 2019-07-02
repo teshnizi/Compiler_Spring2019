@@ -1,50 +1,25 @@
 
-int b[5];
+int arr[5];
 
-
-int foo (int a , int v){
-//    int d[10];
-//    if ( d[2] < 17 ){
-//    }
-//    else{
-//    }
+int foo (int a, int b, int c){
+//    return a + b * 2;
+    arr[0] = 1;
+    return a + b;
 }
-//
-//void main(void) {
-//
-//    int c[5];
-//
-////    while ( c[2] < b ){
-////        b = b * 2 + 1;
-////    }
-//
-//    if ( 1 < 2){
-//    }
-//    else {
-//    }
-//
-////    foo();
-//
-//
-////
-//////    if ( d[2] < 17 ){
-//////        }
-//////        else{
-//////        }
-////
-////    int a[5];
-////    a[1] = c[2] + b * (7 - 1 * -a[0]);
-////
-////	if (b < 0) {
-////		if ( c < 0 ){
-////		    b = 2 * c;
-////		} else {
-//////		    while ( 0 < c ){
-//////                c = c - 1;
-//////                c + 1;
-//////            }
-////		}
-////		c = b + 3;
-////	} else c = 2 * b + 1;
-//}
-//
+
+void main(void) {
+    int x;
+    int y;
+    int z;
+    x = 2 + 5 * 6;
+    y = 0;
+    z = 3;
+    while ( x < 4) {
+        if ( y < arr[2] + 7 ){
+            x = foo(x, y, z);
+            }
+        else {
+            y = foo(y, x, z);
+        }
+    }
+}
