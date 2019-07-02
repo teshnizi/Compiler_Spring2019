@@ -1,26 +1,30 @@
+void foo(int a, int b){
 
-int arr[5];
-
-int foo (int a, int b, int c){
-//    return a + b * 2;
-    arr[0] = arr[0] + 1;
+    a = 4;
+    if (0){
+        int d;
+        d = 2;
+    }else{
+        while(a < 4){
+            a = a + 1;
+        }
+        break;
+        b = 3;
+    }
     return;
 }
 
+int test(void){
+
+    int g;
+    g = 4;
+    return g;
+}
+
 void main(void) {
+
+    foo(3, 6);
     int x;
-    int y;
-    int z;
-//    x = foo ( x, y, z);
-    x = 2 + 5 * 6;
-    y = 0;
-    z = 3;
-    while ( x < 4) {
-        if ( y < arr[2] + 7 ){
-            foo(x, y, z);
-            }
-        else {
-            foo(y, x, z);
-        }
-    }
+    x = test();
+
 }
