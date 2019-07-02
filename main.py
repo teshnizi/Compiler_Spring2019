@@ -52,4 +52,4 @@ if __name__ == '__main__':
         for item in sorted(parser.semantic_intermediate_code.PB):
             print("{}\t{}".format(item, parser.semantic_intermediate_code.PB[item]))
 
-        print(parser.semantic_intermediate_code.SS)
+        # print(parser.semantic_intermediate_code.SS)

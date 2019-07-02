@@ -219,7 +219,7 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def plt(self):
-        self.SS.append('<')
+        self.SS.append('LT')
 
     def pfunction(self):
         self.SS.append('function')
@@ -240,7 +240,7 @@ class SemanticIntermediateCode:
 
     def lt(self):
         t = self.get_temp()
-        self.PB[self.line] = '(<,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
+        self.PB[self.line] = '(LT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
         # print(self.SS)
@@ -451,7 +451,7 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def add_arg(self):
-        print(self.SS)
+        # print(self.SS)
         new_arg = self.SS[-1]
         func = self.get_symbol(self.SS[-3])
 
