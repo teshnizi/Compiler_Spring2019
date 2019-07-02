@@ -22,8 +22,8 @@ param-list_1 -> , param param-list_1
 param-list_1 -> ε
 param -> type-specifier Ftype-specifier_1
 Ftype-specifier_1 -> #pid ID FID_2 #define_param
-FID_2 -> ε
-FID_2 -> [ ]
+FID_2 -> ε #var_param
+FID_2 -> [ ] #arr_param
 compound-stmt -> { declaration-list statement-list }
 statement-list -> statement-list_1
 statement-list_1 -> statement statement-list_1

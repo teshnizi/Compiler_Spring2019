@@ -1,5 +1,6 @@
 class SymbolTableEntry():
-    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=0, PB_line=None, return_value=None):
+    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=0, PB_line=None, return_value=None,
+                 addr_type=None):
         '''
         :param lexeme: name of variable or function
         :param type: type of variable or function return value
@@ -18,15 +19,16 @@ class SymbolTableEntry():
         self.params_addr = []
         self.PB_line = PB_line
         self.return_value = return_value
+        self.addr_type = addr_type
 
-    def add_param(self, addr):
+    def add_param(self, addr, addr_type):
         if self.n_params is None:
             self.n_params = 1
             self.params_addr= []
         else:
             self.n_params += 1
 
-        self.params_addr.append(addr)
+        self.params_addr.append((addr, addr_type))
 
 
 class SemanticIntermediateCode:
@@ -310,18 +312,16 @@ class SemanticIntermediateCode:
         index = self.SS[-1]
         # print(address, size, index)
         t = self.get_temp()
-        if index != '#0':
-            self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
-            self.line += 1
-            self.PB[self.line] = '(ADD,{},#{},{})'.format(t, address, t)
-            self.line += 1
-            self.SS = self.SS[:-2]
-            self.SS.append('@{}'.format(t))
+
+        self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
+        self.line += 1
+        if var.addr_type == 'arr':
+            self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
         else:
-            self.SS = self.SS[:-2]
-            self.SS.append('{}'.format(address))
-
-
+            self.PB[self.line] = '(ADD,{},#{},{})'.format(t, address, t)
+        self.line += 1
+        self.SS = self.SS[:-2]
+        self.SS.append('@{}'.format(t))
 
     def label(self):
         self.SS.append(self.line)
@@ -392,18 +392,27 @@ class SemanticIntermediateCode:
 
         self.SS = self.SS[:-3]
 
+    def arr_param(self):
+        self.SS.append('arr')
+
+    def var_param(self):
+        self.SS.append('var')
+
+
     def define_param(self):
         # print(self.SS)
-        param_type, param_name = self.SS[-2], self.SS[-1]
+        param_type, param_name, addr_type = self.SS[-3], self.SS[-2], self.SS[-1]
         func_scope = self.scope_stack[-1]
         func_entry = self.symbol_table[func_scope]
         # adding the parameter to symbol table
-        self.symbol_table.append(SymbolTableEntry(lexeme=param_name, type=param_type, addr=self.variables_SP, size=4))
+        self.symbol_table.append(SymbolTableEntry(lexeme=param_name, type=param_type, addr=self.variables_SP, size=4,
+                                                  addr_type=addr_type))
         # print(func_entry.n_params)
-        func_entry.add_param(self.variables_SP)  # adds the address of parameter to the function entry inside symbol table
+        func_entry.add_param(self.variables_SP,
+                             addr_type)  # adds the address of parameter to the function entry inside symbol table
         # print(func_entry.n_params)
         self.variables_SP += 4
-        self.SS = self.SS[:-2]
+        self.SS = self.SS[:-3]
         # print(self.SS)
 
     def main_defined_routine(self):
@@ -422,7 +431,11 @@ class SemanticIntermediateCode:
             print('Mismatch in numbers of arguments of {}.'.format(func_name))
         else:
             for param_addr in reversed(func_entry.params_addr):
-                self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], param_addr)
+                addr, addr_type = param_addr
+                if addr_type == 'arr':
+                    if self.SS[-1][0] == '@':
+                        self.SS[-1] = self.SS[-1][1:]
+                self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], addr)
                 self.line += 1
                 self.SS = self.SS[:-1]
 
@@ -438,7 +451,7 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def add_arg(self):
-        # print(self.SS)
+        print(self.SS)
         new_arg = self.SS[-1]
         func = self.get_symbol(self.SS[-3])
 
