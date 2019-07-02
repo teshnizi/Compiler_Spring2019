@@ -23,6 +23,9 @@ def read_first_follow(path_first, path_follow):
             content = line.split(' ')
             non_terminal = content.pop(0)
             first_set = [x.replace(',', '') for x in content]
+            for i in range(len(first_set)):
+                if first_set[i] == '':
+                    first_set[i] = ','
             first_sets[non_terminal] = first_set
 
     follow_sets = dict()
@@ -32,6 +35,9 @@ def read_first_follow(path_first, path_follow):
             content = line.split(' ')
             non_terminal = content.pop(0)
             follow_set = [x.replace(',', '') for x in content]
+            for i in range(len(follow_set)):
+                if follow_set[i] == '':
+                    follow_set[i] = ','
             follow_sets[non_terminal] = follow_set
 
     return first_sets, follow_sets

@@ -78,14 +78,19 @@ class Parser:
         if self.input is None:
             self.get_and_split_token()
 
+
+        print("NONT:     " + nt + "  " + self.input)
+
         if self.input is "EOF":
             if 'ε' in self.first_sets[nt]:
                 return
             else:
                 self.error_file.write(str(self.line_number) + " Syntax Error! Unexpected EndOfFile\n")
 
+
         while self.input not in self.follow_sets[nt] + self.first_sets[nt]:
             self.get_and_split_token()
+            print("lost: " + self.input + " " + nt)
             if self.input == 'EOF':
                 return
 
@@ -103,7 +108,7 @@ class Parser:
                     should be called individually, for others use getattr.
                     '''
                     # print(self.semantic_intermediate_code.SS)
-                    # print(next_state)
+                    print(next_state)
                     if next_state == "#pid":
                         self.waiting_for_id = True # pid routine will be executed after reading variable name
                     elif next_state == "#pnum":
@@ -113,6 +118,7 @@ class Parser:
                         func()
 
                 elif next_state in self.terminals:
+                    # print(next_state)
                     if nt == 'program':
                         if next_state != 'EOF':
                             self.error_file.write(str(self.line_number) + " Syntax Error! Malformed Input\n")
@@ -131,6 +137,7 @@ class Parser:
                         self.error_file.write(str(self.line_number) + " Syntax Error! Missing " + next_state + " \n")
 
                 else:
+                    # print(next_state)
                     self.parse(next_state, depth+1)
 
         else:

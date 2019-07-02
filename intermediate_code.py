@@ -73,7 +73,7 @@ class SemanticIntermediateCode:
 
     def start_while_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.appendSymbolTableEntry(lexeme='while')
+        self.symbol_table.append(SymbolTableEntry(lexeme='while'))
 
     def end_while_scope(self):
         while_scope_start = self.scope_stack.pop()
@@ -118,10 +118,17 @@ class SemanticIntermediateCode:
         self.scope_stack.append(len(self.symbol_table))
         func_return_type, func_name = self.SS[-2], self.SS[-1]
         self.symbol_table.append(SymbolTableEntry(lexeme=func_name, type=func_return_type, PB_line=self.line))
+        self.SS.append(self.line)
+        self.line += 1
 
     def end_func_scope(self):
+        #TODO use return value at te top of the stack
+        # return_type = self.SS.pop()
         scope_start = self.scope_stack.pop()
-        self.symbol_table = self.symbol_table[:scope_start]
+        self.print_symbol_table()
+        self.symbol_table = self.symbol_table[:scope_start + 1]
+        print(self.symbol_table[-1].params_addr)
+        self.print_symbol_table()
 
     def pid(self, id):
         self.SS.append(id)
@@ -251,6 +258,8 @@ class SemanticIntermediateCode:
             self.SS = self.SS[:-2]
             self.SS.append('{}'.format(address))
 
+
+
     def label(self):
         self.SS.append(self.line)
 
@@ -289,12 +298,13 @@ class SemanticIntermediateCode:
 
     def check_main(self):
         if self.SS[-1] == 'void':
-            func_type, func_name = self.SS[-3], self.SS[-2]
+            func_type, func_name = self.SS[-4], self.SS[-3]
             if func_type == 'void' and func_name == 'main':
                 self.main_defined_flag = True
             self.SS = self.SS[:-3]
         else:
             self.SS = self.SS[:-2]
+
 
 
     def define_var(self):
@@ -313,6 +323,7 @@ class SemanticIntermediateCode:
         func_entry = self.symbol_table[func_scope]
 
         # adding the parameter to symbol table
+
         self.symbol_table.append(SymbolTableEntry(lexeme=param_name, type=param_type, addr=self.variables_SP, size=4))
         func_entry.add_param(self.variables_SP)  # adds the address of parameter to the function entry inside symbol table
         self.variables_SP += 4
@@ -323,7 +334,8 @@ class SemanticIntermediateCode:
             print('main function not found!')
 
     def call_func(self):
-        func_name, n_args = int(self.SS[-2]), int(self.SS[-1][1:])
+        print(self.SS)
+        func_name, n_args = self.SS[-2], int(self.SS[-1][1:])
         func_entry = self.get_symbol(func_name)
         self.SS = self.SS[:-2]
         if func_entry.n_params != n_args:

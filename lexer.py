@@ -137,6 +137,7 @@ class Lexer:
         return not (len(self.input_string) == self.iterator), token
 
     def type_of(self, ch):
+        # print(ch)
         if '0' <= ch <= '9':
             return "digit"
         if 'a' <= ch <= 'z':

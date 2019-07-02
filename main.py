@@ -53,3 +53,5 @@ if __name__ == '__main__':
             print("{}\t{}".format(item, parser.semantic_intermediate_code.PB[item]))
 
         print(parser.semantic_intermediate_code.SS)
+
+    print(follow_sets['param'])
