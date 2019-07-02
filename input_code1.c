@@ -22,5 +22,6 @@
 //}
 
 void main(void) {
-    void a;
+    int a[10];
+    a[3] = 4 * a[1];
 }

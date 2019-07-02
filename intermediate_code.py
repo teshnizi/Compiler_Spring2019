@@ -85,11 +85,11 @@ class SemanticIntermediateCode:
 
     def start_while_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(SymbolTableEntry(lexeme='while', PB_line=self.SS[-3]))
+        self.symbol_table.append(SymbolTableEntry(lexeme='while', PB_line=self.SS[-3] + 1))
 
     def jp_while(self):
         self.PB[self.line] = '(JP,{},,)'.format(self.line + 2)
-        self.SS.append(self.line+1)
+        self.SS.append(self.line + 1)
         self.line += 2
 
     def end_while_scope(self):
@@ -104,21 +104,37 @@ class SemanticIntermediateCode:
         switch_scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:switch_scope_start]
 
+    def break_routine(self):
+        print(self.SS)
+        entry = None
+        scope_end = len(self.symbol_table)  # last index of symbol table
+        for scope_start in reversed(self.scope_stack):
+            for element in self.symbol_table[scope_start:scope_end]:
+                if element.lexeme == 'while' or element.lexeme == 'switch':
+                    entry = element
+            scope_end = scope_start
+
+        if entry is not None:
+            self.PB[self.line] = '(JP,{},,)'.format(entry.PB_line - 1)
+            self.line += 1
+        else:
+            print('No \'while\' or \'switch\' found for \'break\'.')
+
     def print_symbol_table(self):
         print("Symbol table:")
         for entry in self.symbol_table:
             print(entry.lexeme)
         print("=============")
 
-    def check_break_scope(self):
-        '''
-        Checks out the latest scope; If it's not while or switch, prints out an error
-        :return:
-        '''
-        entry = self.symbol_table[self.scope_stack[-1]] #TODO check inner entries
-
-        if entry.lexeme != 'switch' and entry.lexeme != 'while':
-            print('No \'while\' or \'switch\' found for \'break\'.')
+    # def check_break_scope(self):
+    #     '''
+    #     Checks out the latest scope; If it's not while or switch, prints out an error
+    #     :return:
+    #     '''
+    #     entry = self.get_symbol[self.scope_stack[-1]]
+    #
+    #     if entry.lexeme != 'switch' and entry.lexeme != 'while':
+    #         print('No \'while\' or \'switch\' found for \'break\'.')
 
     def check_continue_scope(self):
         entry = self.get_symbol('while')
@@ -301,7 +317,8 @@ class SemanticIntermediateCode:
     def while_routine(self):
         # print(self.SS)
         self.PB[self.SS[-1]] = '(JPF,{},{},)'.format(self.SS[-2], self.line + 1)
-        self.PB[self.line] = '(JP,{},,)'.format(self.SS[-3])
+        self.PB[self.line] = '(JP,{},,)'.format(self.SS[-3] + 1)
+        self.PB[self.SS[-3]] = '(JP,{},,)'.format(self.line + 1)
         self.line += 1
         self.SS = self.SS[:-3]
 
@@ -327,7 +344,7 @@ class SemanticIntermediateCode:
         self.SS = self.SS[:-3]
         self.SS.append(func.lexeme)
 
-        if func.lexeme == 'main' and func.type == 'void' and func.n_params == None:
+        if func.lexeme == 'main' and func.type == 'void' and func.n_params == 0:
             self.main_defined_flag = True
             self.PB[0] = '(JP,{},,)'.format(self.line)
 

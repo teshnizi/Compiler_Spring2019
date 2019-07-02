@@ -36,19 +36,19 @@ statement -> return-stmt
 statement -> switch-stmt
 expression-stmt -> expression ; #pop_expression
 expression-stmt -> continue #check_continue_scope #continue_routine ;
-expression-stmt -> break #check_break_scope #push_break_symbol ;
+expression-stmt -> break #break_routine ;
 expression-stmt -> ;
 selection-stmt -> if  ( expression ) #save #start_if_scope statement #end_if_scope else #jpf_save #start_else_scope statement #end_else_scope #jp
-iteration-stmt -> #jp_while while #label ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
+iteration-stmt -> #jp_while while ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
 return-stmt -> return Freturn
 Freturn -> #return_routine_void ;
 Freturn -> expression #return_routine_int ;
-switch-stmt -> switch  ( expression ) { #start_switch_scope case-stmts default-stmt #end_switch_scope }
+switch-stmt -> #jp_switch switch ( expression ) { #start_switch_scope case-stmts default-stmt #end_switch_scope }
 case-stmts -> case-stmts_1
 case-stmts_1 -> case-stmt case-stmts_1
 case-stmts_1 -> ε
-case-stmt -> case NUM : statement-list
-default-stmt -> default : statement-list
+case-stmt -> case #pnum NUM #cmp_save_jpf : statement-list
+default-stmt -> default #jpf : statement-list
 default-stmt -> ε
 expression -> #pid ID FID_3
 expression -> ( expression ) term_1 additive-expression_1 Fadditive-expression
