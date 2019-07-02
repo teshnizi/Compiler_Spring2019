@@ -10,6 +10,7 @@ class SymbolTableEntry():
         :param return_value: return value of function, None for variable
         '''
         self.lexeme = lexeme
+        self.addr = addr
         self.n_params = n_params
         self.size = size
         self.addr = addr
@@ -36,7 +37,6 @@ class SemanticIntermediateCode:
         self.main_defined_flag = False
         self.temporary_SP = 500
         self.variables_SP = 1000
-        self.values_SP = 1400
         self.symbol_table = list()
         self.scope_stack = [0]
 
@@ -217,16 +217,13 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def plt(self):
-        self.SS.append('LT')
+        self.SS.append('<')
 
     def pfunction(self):
         self.SS.append('function')
 
     def mult(self):
         t = self.get_temp()
-        operand1, operand2 = self.SS[-2], self.SS[-1]
-        if operand1 is None or operand2 is None:
-            print("Type mismatch in operands.")
         self.PB[self.line] = '(MULT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
@@ -241,7 +238,7 @@ class SemanticIntermediateCode:
 
     def lt(self):
         t = self.get_temp()
-        self.PB[self.line] = '(LT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
+        self.PB[self.line] = '(<,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
         # print(self.SS)
@@ -253,7 +250,7 @@ class SemanticIntermediateCode:
         '''
         if self.SS[-1] == None or self.SS[-2] == None:
             print("Type mismatch in operands.")
-        self.PB[self.line] = '(ASSIGN,{},@{},)'.format(self.SS[-1], self.SS[-2])
+        self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], self.SS[-2])
         self.line += 1
         # print(self.SS)
         self.SS = self.SS[:-1]
@@ -304,25 +301,27 @@ class SemanticIntermediateCode:
 
         var = self.get_symbol(self.SS[-2])
         if var is None:
-            print('{} is not defined.'.format(self.SS[-2]))
             self.SS = self.SS[:-2]
             self.SS.append("NONE")
+            print('{} is not defined.'.format(self.SS[-2]))
             return
         address = var.addr
         size = var.size
         index = self.SS[-1]
         # print(address, size, index)
         t = self.get_temp()
-        # if index != '#0':
-        self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
-        self.line += 1
-        if var.type == 'array':
-            self.PB[self.line] = '(ADD,{},{},{})'.format(t, address, t)
-        else:
+        if index != '#0':
+            self.PB[self.line] = '(MULT,{},{},{})'.format('#4', index, t)
+            self.line += 1
             self.PB[self.line] = '(ADD,{},#{},{})'.format(t, address, t)
-        self.line += 1
-        self.SS = self.SS[:-2]
-        self.SS.append('{}'.format(t))
+            self.line += 1
+            self.SS = self.SS[:-2]
+            self.SS.append('@{}'.format(t))
+        else:
+            self.SS = self.SS[:-2]
+            self.SS.append('{}'.format(address))
+
+
 
     def label(self):
         self.SS.append(self.line)
@@ -383,24 +382,19 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def define_var(self):
-        var_type = self.SS.pop()
-        var_size, var_name, void_int = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
-        if void_int == 'void':
+        # print(self.SS)
+        var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
+        if var_type == 'void':
             print('Illegal type of void.')
         else:
             self.symbol_table.append(SymbolTableEntry(lexeme=var_name, type=var_type, addr=self.variables_SP, size=4 * var_size))
-            if var_type == 'array':
-                self.PB[self.line] = '(ASSIGN,#{},{},)'.format(self.values_SP, self.variables_SP)
-                self.line += 1
-                self.values_SP += 4 * var_size
-            self.variables_SP += 4
+            self.variables_SP += 4 * var_size
 
         self.SS = self.SS[:-3]
 
     def define_param(self):
-        print(self.SS)
-
-        void_int, param_name, param_type = self.SS[-3], self.SS[-2], self.SS[-1]
+        # print(self.SS)
+        param_type, param_name = self.SS[-2], self.SS[-1]
         func_scope = self.scope_stack[-1]
         func_entry = self.symbol_table[func_scope]
         # adding the parameter to symbol table
@@ -409,7 +403,7 @@ class SemanticIntermediateCode:
         func_entry.add_param(self.variables_SP)  # adds the address of parameter to the function entry inside symbol table
         # print(func_entry.n_params)
         self.variables_SP += 4
-        self.SS = self.SS[:-3]
+        self.SS = self.SS[:-2]
         # print(self.SS)
 
     def main_defined_routine(self):
@@ -435,6 +429,7 @@ class SemanticIntermediateCode:
 
             # if func_entry.type != 'void':
             self.SS.append(func_entry.return_value)
+
             self.PB[self.line] = '(ASSIGN,#{},{},)'.format(self.line+2, func_entry.addr)
             self.line += 1
             self.PB[self.line] = '(JP,{},,)'.format(func_entry.PB_line)  # jump to the beginning of function
@@ -474,9 +469,3 @@ class SemanticIntermediateCode:
     def has_params(self):
         self.SS.append('not_void')
         # print(self.SS)
-
-    def push_simple(self):
-        self.SS.append("simple")
-
-    def push_array(self):
-        self.SS.append("array")

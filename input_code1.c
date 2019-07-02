@@ -1,11 +1,17 @@
-//int b[2];
-//
+int b[2];
+
 
 void func(int a[], int b){
     b = 2;
     a[3] = 4;
 }
 
+int e;
+
+void func2(int a[], int b){
+    b = 2;
+    a[3] = 4;
+}
 
 void main(void){
     int d[7];
