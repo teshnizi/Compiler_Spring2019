@@ -1,15 +1,15 @@
-int b[2];
+//int b[2];
+//
 
-void func(int a[]){
-
+void func(int a[], int b){
+    b = 2;
     a[3] = 4;
 }
 
 
 void main(void){
-    int b;
+    int d[7];
     int c;
-    int a[4];
-    a[1] = 2;
-    func(a);
+    d[0] = 3;
+    c = 3;
 }

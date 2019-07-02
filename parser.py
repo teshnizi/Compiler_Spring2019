@@ -107,7 +107,7 @@ class Parser:
                     should be called individually, for others use getattr.
                     '''
                     # print(self.semantic_intermediate_code.SS)
-                    # print(next_state)
+                    print(next_state)
                     if next_state == "#pid":
                         self.waiting_for_id = True # pid routine will be executed after reading variable name
                     elif next_state == "#pnum":
