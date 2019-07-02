@@ -136,6 +136,7 @@ class SemanticIntermediateCode:
         # func = self.get_symbol(self.SS[-1])
         scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:scope_start + 1]
+        print(self.SS)
         self.SS.pop()
 
     def pid(self, id):
@@ -359,13 +360,16 @@ class SemanticIntermediateCode:
                 self.PB[self.line] = '(ASSIGN,{},{},)'.format(self.SS[-1], param_addr)
                 self.line += 1
                 self.SS = self.SS[:-1]
-            if func_entry.type != 'void':
-                self.SS.append(func_entry.return_value)
+
+
+            # if func_entry.type != 'void':
+            self.SS.append(func_entry.return_value)
 
             self.PB[self.line] = '(ASSIGN,#{},{},)'.format(self.line+2, func_entry.addr)
             self.line += 1
             self.PB[self.line] = '(JP,{},,)'.format(func_entry.PB_line)  # jump to the beginning of function
             self.line += 1
+
         print(self.SS)
 
     def add_arg(self):
