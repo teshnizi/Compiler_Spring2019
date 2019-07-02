@@ -88,7 +88,7 @@ factor -> #pnum NUM
 FID_4 -> FID
 FID_4 -> ( #push0 args ) #call_function
 args -> arg-list
-args -> ε #push0
+args -> ε
 arg-list -> expression #add_arg arg-list_1
 arg-list_1 -> , expression #add_arg arg-list_1
 arg-list_1 -> ε

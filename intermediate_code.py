@@ -1,7 +1,6 @@
 class SymbolTableEntry():
-    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=None, PB_line=None, return_value=None):
+    def __init__(self, lexeme, type=None, size=None, addr=None, n_params=0, PB_line=None, return_value=None):
         '''
-
         :param lexeme: name of variable or function
         :param type: type of variable or function return value
         :param size: size of variable, None for function
@@ -15,8 +14,8 @@ class SymbolTableEntry():
         self.n_params = n_params
         self.size = size
         self.addr = addr
-        self.type=type
-        self.params_addr = None
+        self.type = type
+        self.params_addr = []
         self.PB_line = PB_line
         self.return_value = return_value
 
@@ -113,12 +112,12 @@ class SemanticIntermediateCode:
         '''
         entry = self.symbol_table[self.scope_stack[-1]] #TODO check inner entries
 
-        if entry[0] != 'switch' and entry[0] != 'while':
+        if entry.lexeme != 'switch' and entry.lexeme != 'while':
             print('No \'while\' or \'switch\' found for \'break\'.')
 
     def check_continue_scope(self):
         entry = self.symbol_table[self.scope_stack[-1]]
-        if entry[0] != 'while':
+        if entry.lexeme != 'while':
             print('No \'while\' or \'switch\' found for \'break\'.')
 
     def start_func_scope(self):
@@ -136,8 +135,8 @@ class SemanticIntermediateCode:
         # func = self.get_symbol(self.SS[-1])
         scope_start = self.scope_stack.pop()
         self.symbol_table = self.symbol_table[:scope_start + 1]
-        print(self.SS)
         self.SS.pop()
+        print(self.SS)
 
     def pid(self, id):
         self.SS.append(id)
@@ -167,6 +166,7 @@ class SemanticIntermediateCode:
         :return:
         '''
         self.SS.append('#' + num)
+        print(self.SS)
 
     def plt(self):
         self.SS.append('<')
@@ -301,12 +301,13 @@ class SemanticIntermediateCode:
 
     def push0(self):
         self.SS.append('#0')
+        print(self.SS)
 
     def push1(self):
         self.SS.append('#1')
 
     def set_signature(self):
-        print(self.SS)
+        #print(self.SS)
         func = self.get_symbol(self.SS[-2])
         func.type = self.SS[-3]
         t = self.get_temp()
@@ -320,8 +321,10 @@ class SemanticIntermediateCode:
 
         if func.type == 'int':
             func.return_value = self.get_temp()
+        print(self.SS)
 
     def define_var(self):
+        print(self.SS)
         var_size, var_name, var_type = int(self.SS[-1][1:]), self.SS[-2], self.SS[-3]
         if var_type == 'void':
             print('Illegal type of void.')
@@ -343,6 +346,7 @@ class SemanticIntermediateCode:
         # print(func_entry.n_params)
         self.variables_SP += 4
         self.SS = self.SS[:-2]
+        print(self.SS)
 
     def main_defined_routine(self):
         if not self.main_defined_flag:
@@ -383,12 +387,11 @@ class SemanticIntermediateCode:
         self.SS.append(func_name)
         self.SS.append('#' + str(n_args + 1))
 
-
     def return_routine_void(self):
         # print(self.SS)
         func = self.get_symbol(self.SS[-1])
         if func.type == 'int':
-            print("missing return value!");
+            print("missing return value!")
         self.PB[self.line] = '(JP,@{},,)'.format(func.addr)
         self.line += 1
 
@@ -404,3 +407,4 @@ class SemanticIntermediateCode:
 
     def has_params(self):
         self.SS.append('not_void')
+        print(self.SS)
