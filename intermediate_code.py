@@ -60,7 +60,7 @@ class SemanticIntermediateCode:
                 if entry.lexeme == lexeme:
                     return entry
             scope_end = scope_start
-        print('{} is not defined.'.format(lexeme))
+        return None
 
     def start_if_scope(self):
         '''
@@ -85,7 +85,12 @@ class SemanticIntermediateCode:
 
     def start_while_scope(self):
         self.scope_stack.append(len(self.symbol_table))
-        self.symbol_table.append(SymbolTableEntry(lexeme='while'))
+        self.symbol_table.append(SymbolTableEntry(lexeme='while', PB_line=self.SS[-3]))
+
+    def jp_while(self):
+        self.PB[self.line] = '(JP,{},,)'.format(self.line + 2)
+        self.SS.append(self.line+1)
+        self.line += 2
 
     def end_while_scope(self):
         while_scope_start = self.scope_stack.pop()
@@ -116,9 +121,9 @@ class SemanticIntermediateCode:
             print('No \'while\' or \'switch\' found for \'break\'.')
 
     def check_continue_scope(self):
-        entry = self.symbol_table[self.scope_stack[-1]]
-        if entry.lexeme != 'while':
-            print('No \'while\' or \'switch\' found for \'break\'.')
+        entry = self.get_symbol('while')
+        if entry is None:
+            print('No \'while\' found for \'continue\'.')
 
     def start_func_scope(self):
         '''
@@ -137,6 +142,10 @@ class SemanticIntermediateCode:
         self.symbol_table = self.symbol_table[:scope_start + 1]
         self.SS.pop()
         print(self.SS)
+
+    def push_break_symbol(self):
+        self.symbol_table.append(SymbolTableEntry(lexeme='break', PB_line=self.line))
+        self.line += 1
 
     def pid(self, id):
         self.SS.append(id)
@@ -246,10 +255,10 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
         var = self.get_symbol(self.SS[-2])
-        if var == None:
+        if var is None:
             self.SS = self.SS[:-2]
             self.SS.append("NONE")
-            #TODO Undifined Var Found!
+            print('{} is not defined.'.format(self.SS[-2]))
             return
         address = var.addr
         size = var.size
@@ -297,7 +306,10 @@ class SemanticIntermediateCode:
         self.SS = self.SS[:-3]
 
     def continue_routine(self):
-        pass
+        while_entry = self.get_symbol('while')
+        if while_entry is not None:
+            self.PB[self.line] = '(JP,{},,)'.format(while_entry.PB_line)
+            self.line += 1
 
     def push0(self):
         self.SS.append('#0')

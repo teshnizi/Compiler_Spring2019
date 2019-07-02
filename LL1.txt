@@ -35,11 +35,11 @@ statement -> iteration-stmt
 statement -> return-stmt
 statement -> switch-stmt
 expression-stmt -> expression ; #pop_expression
-expression-stmt -> continue #check_continue_scope ;
-expression-stmt -> break #check_break_scope ;
+expression-stmt -> continue #check_continue_scope #continue_routine ;
+expression-stmt -> break #check_break_scope #push_break_symbol ;
 expression-stmt -> ;
 selection-stmt -> if  ( expression ) #save #start_if_scope statement #end_if_scope else #jpf_save #start_else_scope statement #end_else_scope #jp
-iteration-stmt -> while #label ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
+iteration-stmt -> #jp_while while #label ( expression ) #save #start_while_scope statement #while_routine #end_while_scope
 return-stmt -> return Freturn
 Freturn -> #return_routine_void ;
 Freturn -> expression #return_routine_int ;
