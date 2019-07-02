@@ -217,13 +217,16 @@ class SemanticIntermediateCode:
         # print(self.SS)
 
     def plt(self):
-        self.SS.append('<')
+        self.SS.append('LT')
 
     def pfunction(self):
         self.SS.append('function')
 
     def mult(self):
         t = self.get_temp()
+        operand1, operand2 = self.SS[-2], self.SS[-1]
+        if operand1 is None or operand2 is None:
+            print("Type mismatch in operands.")
         self.PB[self.line] = '(MULT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
@@ -238,7 +241,7 @@ class SemanticIntermediateCode:
 
     def lt(self):
         t = self.get_temp()
-        self.PB[self.line] = '(<,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
+        self.PB[self.line] = '(LT,{},{},{})'.format(self.SS[-2], self.SS[-1], t)
         self.SS = self.SS[:-2]
         self.SS.append(t)
         # print(self.SS)
@@ -301,9 +304,9 @@ class SemanticIntermediateCode:
 
         var = self.get_symbol(self.SS[-2])
         if var is None:
+            print('{} is not defined.'.format(self.SS[-2]))
             self.SS = self.SS[:-2]
             self.SS.append("NONE")
-            print('{} is not defined.'.format(self.SS[-2]))
             return
         address = var.addr
         size = var.size

@@ -1,26 +1,15 @@
+int b[2];
 
-int test(void){
-    int g;
-    g = 4;
-    return 12;
+void func(int a[]){
+
+    a[3] = 4;
 }
 
+
 void main(void){
-    int a;
     int b;
-    b = test();
-//    //a = test();
-//    a = 1;
-//    switch (a){
-//        case 1: a = 2;
-//                switch (a){
-//                    case 3: a = 5;
-//                    case 5: a = 6;
-//                            break;
-//                    default: test();
-//                }
-//        case 2: a = 4;
-//                break;
-//        default: a = a * 4;
-//    }
+    int c;
+    int a[4];
+    a[1] = 2;
+    func(a);
 }
